@@ -36,7 +36,7 @@ namespace VoxelCraft.Core
             RegisterCommands();
         }
 
-        private delegate void CommandHandler(string[] args);
+        public delegate void CommandHandler(string[] args);
 
         public void Initialize()
         {
@@ -355,15 +355,15 @@ namespace VoxelCraft.Core
             switch (weather)
             {
                 case "clear":
-                    world.Weather.SetWeather(WeatherType.Clear, duration);
+                    world.Weather = 0;
                     OnCommandOutput?.Invoke("天气已切换为晴天");
                     break;
                 case "rain":
-                    world.Weather.SetWeather(WeatherType.Rain, duration);
+                    world.Weather = 1;
                     OnCommandOutput?.Invoke("天气已切换为雨天");
                     break;
                 case "thunder":
-                    world.Weather.SetWeather(WeatherType.Thunder, duration);
+                    world.Weather = 2;
                     OnCommandOutput?.Invoke("天气已切换为雷暴");
                     break;
                 default:

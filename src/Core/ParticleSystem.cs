@@ -36,6 +36,13 @@ namespace VoxelCraft.Core
             Console.WriteLine("[ParticleSystem] 粒子系统初始化完成，粒子池大小: " + MaxParticles);
         }
 
+        public int ActiveParticleCount => ActiveParticles;
+
+        public void Render(Camera camera)
+        {
+            // 渲染粒子
+        }
+
         public void Update(float deltaTime)
         {
             for (int i = particles.Count - 1; i >= 0; i--)
@@ -735,16 +742,6 @@ namespace VoxelCraft.Core
                     particle.Lifetime = 1.0f;
                     particle.Gravity = 1.0f;
                     particle.Drag = 0.1f;
-                    break;
-
-                case ParticleType.SquidInk:
-                    particle.StartColor = new Vector3(0.1f, 0.1f, 0.2f);
-                    particle.EndColor = new Vector3(0.05f, 0.05f, 0.1f);
-                    particle.StartSize = 0.25f;
-                    particle.EndSize = 0.1f;
-                    particle.Lifetime = 1.5f;
-                    particle.Gravity = 0.1f;
-                    particle.Drag = 0.3f;
                     break;
 
                 case ParticleType.Fishing:

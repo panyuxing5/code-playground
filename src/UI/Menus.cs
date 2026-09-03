@@ -29,6 +29,10 @@ namespace VoxelCraft.UI
             selectedButton = 0;
         }
 
+        public PauseMenu(UIManager ui, GameEngine engine) : this()
+        {
+        }
+
         public void Initialize()
         {
             Console.WriteLine("[PauseMenu] 暂停菜单初始化完成");
@@ -64,6 +68,11 @@ namespace VoxelCraft.UI
 
             // 处理键盘导航
             // 实际游戏中处理上下键和回车键
+        }
+
+        public void Update(float deltaTime)
+        {
+            if (!isOpen) return;
         }
 
         public void Render(UIManager uiManager)
@@ -248,6 +257,10 @@ namespace VoxelCraft.UI
             selectedButton = 0;
             random = new Random();
             currentSplash = splashTexts[random.Next(splashTexts.Length)];
+        }
+
+        public MainMenu(UIManager ui, GameEngine engine) : this()
+        {
         }
 
         public void Initialize()

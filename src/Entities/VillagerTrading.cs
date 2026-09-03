@@ -52,6 +52,22 @@ namespace VoxelCraft.Entities
         public int WorkstationBlock { get; set; }
         public List<VillagerTrade[]> Trades { get; set; }
 
+        // 静态职业实例
+        public static readonly VillagerProfession None = new VillagerProfession { Name = "None" };
+        public static readonly VillagerProfession Armorer = new VillagerProfession { Name = "Armorer" };
+        public static readonly VillagerProfession Butcher = new VillagerProfession { Name = "Butcher" };
+        public static readonly VillagerProfession Cartographer = new VillagerProfession { Name = "Cartographer" };
+        public static readonly VillagerProfession Cleric = new VillagerProfession { Name = "Cleric" };
+        public static readonly VillagerProfession Farmer = new VillagerProfession { Name = "Farmer" };
+        public static readonly VillagerProfession Fisherman = new VillagerProfession { Name = "Fisherman" };
+        public static readonly VillagerProfession Fletcher = new VillagerProfession { Name = "Fletcher" };
+        public static readonly VillagerProfession Leatherworker = new VillagerProfession { Name = "Leatherworker" };
+        public static readonly VillagerProfession Librarian = new VillagerProfession { Name = "Librarian" };
+        public static readonly VillagerProfession Mason = new VillagerProfession { Name = "Mason" };
+        public static readonly VillagerProfession Shepherd = new VillagerProfession { Name = "Shepherd" };
+        public static readonly VillagerProfession ToolSmith = new VillagerProfession { Name = "ToolSmith" };
+        public static readonly VillagerProfession WeaponSmith = new VillagerProfession { Name = "WeaponSmith" };
+
         public VillagerProfession()
         {
             Trades = new List<VillagerTrade[]>();

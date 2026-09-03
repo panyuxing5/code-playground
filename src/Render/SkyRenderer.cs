@@ -201,7 +201,7 @@ namespace VoxelCraft.Render
             Matrix4 model = Matrix4.CreateTranslation(sunPos);
 
             // 让太阳始终面向相机
-            model *= Matrix4.CreateFromQuaternion(camera.Rotation);
+            model *= Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(camera.Rotation));
 
             sunShader.SetMatrix4("view", view);
             sunShader.SetMatrix4("projection", projection);
@@ -236,7 +236,7 @@ namespace VoxelCraft.Render
             view.ClearTranslation();
             Matrix4 projection = camera.GetProjectionMatrix();
             Matrix4 model = Matrix4.CreateTranslation(moonPos);
-            model *= Matrix4.CreateFromQuaternion(camera.Rotation);
+            model *= Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(camera.Rotation));
 
             moonShader.SetMatrix4("view", view);
             moonShader.SetMatrix4("projection", projection);

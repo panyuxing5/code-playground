@@ -28,6 +28,33 @@ namespace VoxelCraft.Core
         public long PlayTime { get; private set; }
         public long TimeSinceDeath { get; private set; }
         public long TimeSinceRest { get; private set; }
+        public long PlayTimeTicks { get; set; }
+        public long TimeUnderwater { get; set; }
+        public long DaysPlayed { get; set; }
+
+        // 扩展统计属性
+        public long AnimalsBred { get; set; }
+        public long BiomesExplored { get; set; }
+        public long BlocksMined { get; set; }
+        public long BlocksPlaced { get; set; }
+        public long CraftingTableUsed { get; set; }
+        public long Deaths { get; set; }
+        public long DeathsByMobs { get; set; }
+        public long DistanceFallen { get; set; }
+        public long DistanceFlown { get; set; }
+        public long DistanceSwum { get; set; }
+        public long DistanceWalked { get; set; }
+        public long FoodEaten { get; set; }
+        public long FurnaceUsed { get; set; }
+        public long HealthRestored { get; set; }
+        public long ItemsBroken { get; set; }
+        public long ItemsDropped { get; set; }
+        public long ItemsPickedUp { get; set; }
+        public long ItemsUsed { get; set; }
+        public long Jumps { get; set; }
+        public long MaxHeightReached { get; set; }
+        public long MobsKilled { get; set; }
+        public long TradesCompleted { get; set; }
 
         // 移动距离（厘米）
         public long WalkDistance { get; private set; }

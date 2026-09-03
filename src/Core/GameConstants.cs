@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using OpenTK.Mathematics;
 
 namespace VoxelCraft.Core
@@ -6,7 +6,7 @@ namespace VoxelCraft.Core
     public static class GameConstants
     {
         // ========================================
-        // 游戏基本信息
+        // 娓告垙鍩烘湰淇℃伅
         // ========================================
         public const string GAME_NAME = "VoxelCraft";
         public const string GAME_VERSION = "1.0.0";
@@ -15,16 +15,16 @@ namespace VoxelCraft.Core
         public const int TARGET_UPS = 60;
 
         // ========================================
-        // 窗口设置
+        // 绐楀彛璁剧疆
         // ========================================
         public const int WINDOW_WIDTH = 1280;
         public const int WINDOW_HEIGHT = 720;
-        public const string WINDOW_TITLE = "VoxelCraft - 3D体素沙盒游戏";
+        public const string WINDOW_TITLE = "VoxelCraft - 3D浣撶礌娌欑洅娓告垙";
         public const bool VSYNC_ENABLED = true;
         public const int MAX_FPS = 240;
 
         // ========================================
-        // 世界设置
+        // 涓栫晫璁剧疆
         // ========================================
         public const int CHUNK_SIZE = 16;
         public const int CHUNK_HEIGHT = 256;
@@ -38,7 +38,7 @@ namespace VoxelCraft.Core
         public const long WORLD_SEED_DEFAULT = 1234567890;
 
         // ========================================
-        // 方块设置
+        // 鏂瑰潡璁剧疆
         // ========================================
         public const float BLOCK_SIZE = 1.0f;
         public const int MAX_BLOCK_ID = 256;
@@ -53,7 +53,7 @@ namespace VoxelCraft.Core
         public const float BLOCK_LIGHT_GLOWSTONE = 15;
 
         // ========================================
-        // 玩家设置
+        // 鐜╁璁剧疆
         // ========================================
         public const float PLAYER_WIDTH = 0.6f;
         public const float PLAYER_HEIGHT = 1.8f;
@@ -89,7 +89,7 @@ namespace VoxelCraft.Core
         public const float PLAYER_FALL_DAMAGE_PER_BLOCK = 1.0f;
 
         // ========================================
-        // 相机设置
+        // 鐩告満璁剧疆
         // ========================================
         public const float FOV_DEFAULT = 70.0f;
         public const float FOV_MIN = 30.0f;
@@ -103,7 +103,7 @@ namespace VoxelCraft.Core
         public const float PITCH_MAX = 89.9f;
 
         // ========================================
-        // 物理设置
+        // 鐗╃悊璁剧疆
         // ========================================
         public const float GRAVITY = 25.0f;
         public const float JUMP_VELOCITY = 8.0f;
@@ -119,7 +119,7 @@ namespace VoxelCraft.Core
         public const float MAX_COLLISION_ITERATIONS = 4;
 
         // ========================================
-        // 光照设置
+        // 鍏夌収璁剧疆
         // ========================================
         public const int LIGHT_LEVEL_MAX = 15;
         public const int LIGHT_LEVEL_MIN = 0;
@@ -127,17 +127,17 @@ namespace VoxelCraft.Core
         public const float SKY_LIGHT_DAY = 1.0f;
         public const float SKY_LIGHT_NIGHT = 0.1f;
         public const float SKY_LIGHT_SUNSET = 0.5f;
-        public const Vector3 SKY_COLOR_DAY = default;
-        public const Vector3 SKY_COLOR_NIGHT = default;
-        public const Vector3 SKY_COLOR_SUNSET = default;
-        public const Vector3 FOG_COLOR_DAY = default;
-        public const Vector3 FOG_COLOR_NIGHT = default;
+        public static readonly Vector3 SKY_COLOR_DAY = default;
+        public static readonly Vector3 SKY_COLOR_NIGHT = default;
+        public static readonly Vector3 SKY_COLOR_SUNSET = default;
+        public static readonly Vector3 FOG_COLOR_DAY = default;
+        public static readonly Vector3 FOG_COLOR_NIGHT = default;
         public const float FOG_DENSITY = 0.005f;
         public const float FOG_START = 50.0f;
         public const float FOG_END = 200.0f;
 
         // ========================================
-        // 时间设置
+        // 鏃堕棿璁剧疆
         // ========================================
         public const int DAY_LENGTH_TICKS = 24000;
         public const int DAY_START_TICK = 0;
@@ -150,7 +150,7 @@ namespace VoxelCraft.Core
         public const float TICK_TIME = 1.0f / TICK_RATE;
 
         // ========================================
-        // 生物设置
+        // 鐢熺墿璁剧疆
         // ========================================
         public const int MAX_ENTITIES_PER_CHUNK = 32;
         public const int MAX_ENTITIES_PER_WORLD = 1000;
@@ -170,7 +170,7 @@ namespace VoxelCraft.Core
         public const float MOB_KNOCKBACK_FORCE = 2.0f;
 
         // ========================================
-        // 物品设置
+        // 鐗╁搧璁剧疆
         // ========================================
         public const int MAX_ITEM_ID = 1024;
         public const int MAX_STACK_SIZE_DEFAULT = 64;
@@ -186,7 +186,7 @@ namespace VoxelCraft.Core
         public const float ITEM_ENTITY_BOUNCE_FORCE = 0.3f;
 
         // ========================================
-        // 合成设置
+        // 鍚堟垚璁剧疆
         // ========================================
         public const int CRAFTING_GRID_SIZE = 3;
         public const int FURNACE_SLOTS = 3;
@@ -198,7 +198,7 @@ namespace VoxelCraft.Core
         public const float FURNACE_FUEL_TIME_LAVA = 1000.0f;
 
         // ========================================
-        // 存档设置
+        // 瀛樻。璁剧疆
         // ========================================
         public const string SAVE_FOLDER_NAME = "saves";
         public const string WORLD_DATA_FILE = "level.dat";
@@ -210,7 +210,7 @@ namespace VoxelCraft.Core
         public const int SAVE_COMPRESSION_LEVEL = 6;
 
         // ========================================
-        // 网络设置
+        // 缃戠粶璁剧疆
         // ========================================
         public const int DEFAULT_PORT = 25565;
         public const int MAX_PLAYERS = 20;
@@ -220,7 +220,7 @@ namespace VoxelCraft.Core
         public const int MAX_PACKET_SIZE = 1048576;
 
         // ========================================
-        // 渲染设置
+        // 娓叉煋璁剧疆
         // ========================================
         public const int MAX_VERTICES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE * CHUNK_HEIGHT * 6 * 4;
         public const int MAX_INDICES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE * CHUNK_HEIGHT * 6 * 6;
@@ -254,7 +254,7 @@ namespace VoxelCraft.Core
         public const float DOF_APERTURE = 0.02f;
 
         // ========================================
-        // 粒子设置
+        // 绮掑瓙璁剧疆
         // ========================================
         public const int MAX_PARTICLES = 10000;
         public const float PARTICLE_SIZE_DEFAULT = 0.1f;
@@ -265,7 +265,7 @@ namespace VoxelCraft.Core
         public const int SNOW_PARTICLES_PER_CHUNK = 50;
 
         // ========================================
-        // 音效设置
+        // 闊虫晥璁剧疆
         // ========================================
         public const float MASTER_VOLUME_DEFAULT = 1.0f;
         public const float MUSIC_VOLUME_DEFAULT = 0.5f;
@@ -278,7 +278,7 @@ namespace VoxelCraft.Core
         public const float SOUND_ROLLOFF_FACTOR = 1.0f;
 
         // ========================================
-        // 调试设置
+        // 璋冭瘯璁剧疆
         // ========================================
         public const bool DEBUG_MODE = false;
         public const bool SHOW_FPS = true;
@@ -293,7 +293,7 @@ namespace VoxelCraft.Core
         public const int PROFILER_HISTORY_SIZE = 300;
 
         // ========================================
-        // 颜色定义
+        // 棰滆壊瀹氫箟
         // ========================================
         public static readonly Vector4 COLOR_WHITE = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         public static readonly Vector4 COLOR_BLACK = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -315,7 +315,7 @@ namespace VoxelCraft.Core
         public static readonly Vector4 COLOR_MAGENTA_DARK = new Vector4(0.5f, 0.0f, 0.5f, 1.0f);
 
         // ========================================
-        // 方块ID定义
+        // 鏂瑰潡ID瀹氫箟
         // ========================================
         public const ushort BLOCK_AIR = 0;
         public const ushort BLOCK_STONE = 1;
@@ -574,8 +574,167 @@ namespace VoxelCraft.Core
         public const ushort BLOCK_PURPUR_DOOR = 254;
         public const ushort BLOCK_UNKNOWN = 255;
 
+        // 扩展方块ID
+        public const ushort BLOCK_COMPOSTER = 256;
+        public const ushort BLOCK_POTATO = 257;
+        public const ushort BLOCK_CARROT = 258;
+        public const ushort BLOCK_GLOW_BERRIES = 259;
+        public const ushort BLOCK_FLETCHING_TABLE = 260;
+        public const ushort BLOCK_BARREL = 261;
+        public const ushort BLOCK_LOOM = 262;
+        public const ushort BLOCK_LECTERN = 263;
+        public const ushort BLOCK_COMPASS = 264;
+        public const ushort BLOCK_CLOCK = 265;
+        public const ushort BLOCK_NAME_TAG = 266;
+        public const ushort BLOCK_CARTOGRAPHY_TABLE = 267;
+        public const ushort BLOCK_MAP = 268;
+        public const ushort BLOCK_ITEM_FRAME = 269;
+        public const ushort BLOCK_END_EYE = 270;
+        public const ushort BLOCK_BLAST_FURNACE = 271;
+        public const ushort BLOCK_GRINDSTONE = 272;
+        public const ushort BLOCK_SMITHING_TABLE = 273;
+        public const ushort BLOCK_SMOKER = 274;
+        public const ushort BLOCK_STONECUTTER = 275;
+        public const ushort BLOCK_POLISHED_ANDESITE = 276;
+        public const ushort BLOCK_TERRACOTTA = 277;
+        public const ushort BLOCK_GILDED_BLACKSTONE = 278;
+        public const ushort BLOCK_WOOD = 279;
+
+        // 扩展方块ID
+        public const ushort BLOCK_ACACIA_LEAVES = 280;
+        public const ushort BLOCK_ACACIA_LOG = 281;
+        public const ushort BLOCK_ACACIA_PLANKS = 282;
+        public const ushort BLOCK_ALLIUM = 283;
+        public const ushort BLOCK_AMETHYST_BLOCK = 284;
+        public const ushort BLOCK_AMETHYST_CLUSTER = 285;
+        public const ushort BLOCK_ANCIENT_DEBRIS = 286;
+        public const ushort BLOCK_ANCIENT_DEBRY = 287;
+        public const ushort BLOCK_ANDESITE = 288;
+        public const ushort BLOCK_AZALEA = 289;
+        public const ushort BLOCK_AZALEA_LEAVES = 290;
+        public const ushort BLOCK_AZURE_BLUET = 291;
+        public const ushort BLOCK_BAMBOO = 292;
+        public const ushort BLOCK_BAMBOO_PLANKS = 293;
+        public const ushort BLOCK_BEETROOT = 294;
+        public const ushort BLOCK_BIRCH_LEAVES = 295;
+        public const ushort BLOCK_BIRCH_LOG = 296;
+        public const ushort BLOCK_BIRCH_PLANKS = 297;
+        public const ushort BLOCK_BLACKSTONE = 298;
+        public const ushort BLOCK_BLUE_BED = 299;
+        public const ushort BLOCK_BLUE_ICE = 300;
+        public const ushort BLOCK_BLUE_ORCHID = 301;
+        public const ushort BLOCK_BUDDING_AMETHYST = 302;
+        public const ushort BLOCK_CALCITE = 303;
+        public const ushort BLOCK_CAMPFIRE = 304;
+        public const ushort BLOCK_CHERRY_LEAVES = 305;
+        public const ushort BLOCK_CHERRY_LOG = 306;
+        public const ushort BLOCK_CHERRY_PLANKS = 307;
+        public const ushort BLOCK_COAL_BLOCK = 308;
+        public const ushort BLOCK_COARSE_DIRT = 309;
+        public const ushort BLOCK_COBBLED_DEEPSLATE = 310;
+        public const ushort BLOCK_COCOA = 311;
+        public const ushort BLOCK_CONDUIT = 312;
+        public const ushort BLOCK_COPPER_BLOCK = 313;
+        public const ushort BLOCK_COPPER_ORE = 314;
+        public const ushort BLOCK_CORNFLOWER = 315;
+        public const ushort BLOCK_CRIMSON_FUNGUS = 316;
+        public const ushort BLOCK_CRYING_OBSIDIAN = 317;
+        public const ushort BLOCK_DARK_OAK_LEAVES = 318;
+        public const ushort BLOCK_DARK_OAK_LOG = 319;
+        public const ushort BLOCK_DARK_OAK_PLANKS = 320;
+        public const ushort BLOCK_DEEPSLATE = 321;
+        public const ushort BLOCK_DEEPSLATE_BRICKS = 322;
+        public const ushort BLOCK_DEEPSLATE_COAL_ORE = 323;
+        public const ushort BLOCK_DEEPSLATE_COPPER_ORE = 324;
+        public const ushort BLOCK_DEEPSLATE_DIAMOND_ORE = 325;
+        public const ushort BLOCK_DEEPSLATE_GOLD_ORE = 326;
+        public const ushort BLOCK_DEEPSLATE_IRON_ORE = 327;
+        public const ushort BLOCK_DEEPSLATE_LAPIS_ORE = 328;
+        public const ushort BLOCK_DEEPSLATE_REDSTONE_ORE = 329;
+        public const ushort BLOCK_DIORITE = 330;
+        public const ushort BLOCK_DOOR = 331;
+        public const ushort BLOCK_DRAGON_EGG = 332;
+        public const ushort BLOCK_DRIPSTONE_BLOCK = 333;
+        public const ushort BLOCK_END_STONE_BRICKS = 334;
+        public const ushort BLOCK_FERN = 335;
+        public const ushort BLOCK_FLOWER_RED = 336;
+        public const ushort BLOCK_FLOWER_YELLOW = 337;
+        public const ushort BLOCK_FLOWERING_AZALEA = 338;
+        public const ushort BLOCK_FLOWERING_AZALEA_LEAVES = 339;
+        public const ushort BLOCK_GRANITE = 340;
+        public const ushort BLOCK_GRASS_BLOCK = 341;
+        public const ushort BLOCK_GRASS_PLANT = 342;
+        public const ushort BLOCK_GREEN_BED = 343;
+        public const ushort BLOCK_HEAVY_WEIGHTED_PRESSURE_PLATE = 344;
+        public const ushort BLOCK_JUNGLE_LEAVES = 345;
+        public const ushort BLOCK_JUNGLE_LOG = 346;
+        public const ushort BLOCK_JUNGLE_PLANKS = 347;
+        public const ushort BLOCK_KELP = 348;
+        public const ushort BLOCK_LANTERN = 349;
+        public const ushort BLOCK_LARGE_FERN = 350;
+        public const ushort BLOCK_LIGHT_WEIGHTED_PRESSURE_PLATE = 351;
+        public const ushort BLOCK_LILAC = 352;
+        public const ushort BLOCK_LILY_OF_THE_VALLEY = 353;
+        public const ushort BLOCK_MAGMA_BLOCK = 354;
+        public const ushort BLOCK_MANGROVE_LEAVES = 355;
+        public const ushort BLOCK_MANGROVE_LOG = 356;
+        public const ushort BLOCK_MANGROVE_PLANKS = 357;
+        public const ushort BLOCK_MOSS_BLOCK = 358;
+        public const ushort BLOCK_MOSS_CARPET = 359;
+        public const ushort BLOCK_MUD = 360;
+        public const ushort BLOCK_MUD_BRICKS = 361;
+        public const ushort BLOCK_NETHER_GOLD_ORE = 362;
+        public const ushort BLOCK_NETHER_QUARTZ_ORE = 363;
+        public const ushort BLOCK_ORANGE_TULIP = 364;
+        public const ushort BLOCK_OXEYE_DAISY = 365;
+        public const ushort BLOCK_PACKED_MUD = 366;
+        public const ushort BLOCK_PEONY = 367;
+        public const ushort BLOCK_PINK_TULIP = 368;
+        public const ushort BLOCK_PODZOL = 369;
+        public const ushort BLOCK_POLISHED_DEEPSLATE = 370;
+        public const ushort BLOCK_RED_BED = 371;
+        public const ushort BLOCK_RED_SAND = 372;
+        public const ushort BLOCK_RED_TULIP = 373;
+        public const ushort BLOCK_REDSTONE_LAMP_ON = 374;
+        public const ushort BLOCK_REDSTONE_REPEATER = 375;
+        public const ushort BLOCK_REDSTONE_TORCH_WALL = 376;
+        public const ushort BLOCK_REINFORCED_DEEPSLATE = 377;
+        public const ushort BLOCK_ROSE_BUSH = 378;
+        public const ushort BLOCK_SCULK = 379;
+        public const ushort BLOCK_SCULK_CATALYST = 380;
+        public const ushort BLOCK_SCULK_SENSOR = 381;
+        public const ushort BLOCK_SCULK_SHRIEKER = 382;
+        public const ushort BLOCK_SEAGRASS = 383;
+        public const ushort BLOCK_SHROOMLIGHT = 384;
+        public const ushort BLOCK_SOUL_CAMPFIRE = 385;
+        public const ushort BLOCK_SOUL_FIRE = 386;
+        public const ushort BLOCK_SOUL_LANTERN = 387;
+        public const ushort BLOCK_SOUL_SOIL = 388;
+        public const ushort BLOCK_SOUL_TORCH = 389;
+        public const ushort BLOCK_SPAWNER = 390;
+        public const ushort BLOCK_SPRUCE_LEAVES = 391;
+        public const ushort BLOCK_SPRUCE_LOG = 392;
+        public const ushort BLOCK_SPRUCE_PLANKS = 393;
+        public const ushort BLOCK_SUNFLOWER = 394;
+        public const ushort BLOCK_SWEET_BERRY_BUSH = 395;
+        public const ushort BLOCK_TARGET = 396;
+        public const ushort BLOCK_TUFF = 397;
+        public const ushort BLOCK_VINE = 398;
+        public const ushort BLOCK_WALL_TORCH = 399;
+        public const ushort BLOCK_WET_SPONGE = 400;
+        public const ushort BLOCK_WHEAT_SEEDS = 401;
+        public const ushort BLOCK_WHITE_BED = 402;
+        public const ushort BLOCK_WHITE_CONCRETE = 403;
+        public const ushort BLOCK_WHITE_TERRACOTTA = 404;
+        public const ushort BLOCK_WHITE_TULIP = 405;
+        public const ushort BLOCK_WHITE_WOOL = 406;
+        public const ushort BLOCK_WITHER_ROSE = 407;
+        public const ushort BLOCK_WOOD_PLANKS = 408;
+        public const ushort BLOCK_YELLOW_BED = 409;
+
+
         // ========================================
-        // 物品ID定义
+        // 鐗╁搧ID瀹氫箟
         // ========================================
         public const int ITEM_AIR = 0;
         public const int ITEM_STONE_SWORD = 1;
@@ -878,5 +1037,40 @@ namespace VoxelCraft.Core
         public const int ITEM_SMOKY_QUARTZ = 298;
         public const int ITEM_TIGERS_EYE = 299;
         public const int ITEM_ZIRCON = 300;
+        public const int ITEM_STICK = 301;
+        public const int ITEM_IRON_INGOT = 302;
+
+        // 扩展物品ID
+        public const int ITEM_BEEF = 303;
+        public const int ITEM_BREAD = 304;
+        public const int ITEM_CACTUS = 305;
+        public const int ITEM_CHICKEN = 306;
+        public const int ITEM_COAL = 307;
+        public const int ITEM_COCOA_BEANS = 308;
+        public const int ITEM_COD = 309;
+        public const int ITEM_DANDELION = 310;
+        public const int ITEM_DIAMOND = 311;
+        public const int ITEM_DRAGON_EGG = 312;
+        public const int ITEM_FEATHER = 313;
+        public const int ITEM_FLINT = 314;
+        public const int ITEM_GOLD_INGOT = 315;
+        public const int ITEM_GUNPOWDER = 316;
+        public const int ITEM_HAY_BLOCK = 317;
+        public const int ITEM_IRON_BLOCK = 318;
+        public const int ITEM_LAPIS_LAZULI = 319;
+        public const int ITEM_MILK_BUCKET = 320;
+        public const int ITEM_MUTTON = 321;
+        public const int ITEM_PORKCHOP = 322;
+        public const int ITEM_RABBIT_MEAT = 323;
+        public const int ITEM_SALMON = 324;
+        public const int ITEM_SCULK_CATALYST = 325;
+        public const int ITEM_SLIMEBALL = 326;
+        public const int ITEM_SPONGE = 327;
+        public const int ITEM_STRING = 328;
+        public const int ITEM_TORCHFLOWER_SEEDS = 329;
+        public const int ITEM_TROPICAL_FISH = 330;
+        public const int ITEM_WHEAT = 331;
+        public const int ITEM_WHEAT_SEEDS = 332;
+
     }
 }

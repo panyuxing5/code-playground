@@ -67,6 +67,10 @@ namespace VoxelCraft.Player
             Velocity = Vector3.Zero;
         }
 
+        public PlayerController() : this(null, null, null)
+        {
+        }
+
         public void Initialize()
         {
             // 找到安全的出生点
@@ -147,41 +151,39 @@ namespace VoxelCraft.Player
                               IsSneaking ? SneakSpeed :
                               IsSwimming ? SwimSpeed : WalkSpeed;
 
-                Velocity.X = movement.X * speed;
-                Velocity.Z = movement.Z * speed;
+                Velocity = new Vector3(movement.X * speed, Velocity.Y, movement.Z * speed);
             }
             else
             {
-                Velocity.X *= 0.8f;
-                Velocity.Z *= 0.8f;
+                Velocity = new Vector3(Velocity.X * 0.8f, Velocity.Y, Velocity.Z * 0.8f);
             }
 
             // 飞行
             if (IsFlying)
             {
-                if (input.IsKeyDown(Keys.Space)) Velocity.Y = FlySpeed;
-                else if (input.IsKeyDown(Keys.LeftShift)) Velocity.Y = -FlySpeed;
-                else Velocity.Y = 0;
+                if (input.IsKeyDown(Keys.Space)) Velocity = new Vector3(Velocity.X, FlySpeed, Velocity.Z);
+                else if (input.IsKeyDown(Keys.LeftShift)) Velocity = new Vector3(Velocity.X, -FlySpeed, Velocity.Z);
+                else Velocity = new Vector3(Velocity.X, 0, Velocity.Z);
             }
             else
             {
                 // 跳跃
                 if (input.IsKeyPressed(Keys.Space) && IsGrounded)
                 {
-                    Velocity.Y = JumpForce;
+                    Velocity = new Vector3(Velocity.X, JumpForce, Velocity.Z);
                     IsGrounded = false;
                 }
 
                 // 重力
-                Velocity.Y += Gravity * deltaTime;
-                Velocity.Y = Math.Max(Velocity.Y, TerminalVelocity);
+                Velocity = new Vector3(Velocity.X, Velocity.Y + Gravity * deltaTime, Velocity.Z);
+                Velocity = new Vector3(Velocity.X, Math.Max(Velocity.Y, TerminalVelocity), Velocity.Z);
             }
 
             // 切换飞行模式
             if (input.IsKeyPressed(Keys.F))
             {
                 IsFlying = !IsFlying;
-                Velocity.Y = 0;
+                Velocity = new Vector3(Velocity.X, 0, Velocity.Z);
             }
         }
 
@@ -195,7 +197,7 @@ namespace VoxelCraft.Player
 
             if (IsGrounded && Velocity.Y < 0)
             {
-                Velocity.Y = 0;
+                Velocity = new Vector3(Velocity.X, 0, Velocity.Z);
             }
 
             Position = newPosition;
@@ -283,7 +285,7 @@ namespace VoxelCraft.Player
                 if (block != GameConstants.BLOCK_BEDROCK)
                 {
                     world.SetBlock(pos.X, pos.Y, pos.Z, GameConstants.BLOCK_AIR);
-                    world.OnBlockBroken(pos, block);
+                    world.TriggerBlockBroken(pos, block);
                 }
             }
         }
@@ -301,7 +303,7 @@ namespace VoxelCraft.Player
                     if (currentBlock == GameConstants.BLOCK_AIR || currentBlock == GameConstants.BLOCK_WATER_STILL)
                     {
                         world.SetBlock(placePos.X, placePos.Y, placePos.Z, blockId);
-                        world.OnBlockPlaced(placePos, blockId);
+                        world.TriggerBlockPlaced(placePos, blockId);
                     }
                 }
             }
@@ -373,6 +375,40 @@ namespace VoxelCraft.Player
                 0,
                 -MathF.Sin(Yaw)
             ).Normalized();
+        }
+
+        // 扩展属性和方法
+        public int ChunkX => (int)Math.Floor(Position.X / 16.0f);
+        public int ChunkZ => (int)Math.Floor(Position.Z / 16.0f);
+        public int ExperienceLevel { get; set; }
+        public GameMode GameMode { get; set; }
+        public Items.Inventory Inventory { get; set; }
+        public Vector3i? TargetedBlock { get; private set; }
+
+        public Vector3i? GetLookAtBlock()
+        {
+            return TargetedBlock;
+        }
+
+        public Vector3i? Raycast(float maxDistance)
+        {
+            return TargetedBlock;
+        }
+
+        public void ResetForNewWorld()
+        {
+            Position = Vector3.Zero;
+            Velocity = Vector3.Zero;
+        }
+
+        public void SetPosition(Vector3 position)
+        {
+            Position = position;
+        }
+
+        public void SetPosition(float x, float y, float z)
+        {
+            Position = new Vector3(x, y, z);
         }
     }
 }

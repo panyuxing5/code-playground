@@ -465,7 +465,7 @@ namespace VoxelCraft.Entities
             // 鸡可以缓降
             if (Velocity.Y < -2.0f)
             {
-                Velocity.Y = -2.0f;
+                Velocity = new Vector3(Velocity.X, -2.0f, Velocity.Z);
             }
         }
 
@@ -546,6 +546,22 @@ namespace VoxelCraft.Entities
     {
         public string Profession { get; set; } = "farmer";
         public int Level { get; set; } = 1;
+        public Vector3? BedPosition { get; set; }
+        public Vector3? WorkstationPosition { get; set; }
+        public Vector3? TargetPosition { get; set; }
+        public Vector3? ThreatPosition { get; set; }
+        public int BreedCooldown { get; set; }
+        public bool CanBreed { get; set; }
+        public VillagerActivity CurrentActivity { get; set; } = VillagerActivity.Idle;
+        public bool HasTarget { get; set; }
+        public bool IsBaby { get; set; }
+        public bool IsPanicked { get; set; }
+        public bool IsSleeping { get; set; }
+        public bool OnGround { get; set; }
+        public int SocialTicks { get; set; }
+        public int WorkTicks { get; set; }
+        public int[] TradeUses { get; set; } = new int[16];
+        public int TotalTradeUses { get; set; }
 
         public Villager(WorldManager world) : base(world)
         {
@@ -560,6 +576,11 @@ namespace VoxelCraft.Entities
             DetectionRange = 16.0f;
             IsPassive = true;
             CustomName = "村民";
+        }
+
+        public Vector3 GetLookVector()
+        {
+            return Forward;
         }
 
         protected override void DropLoot()

@@ -101,7 +101,7 @@ namespace VoxelCraft.World
             if (offsetX != 0 || offsetZ != 0) return false;
 
             // 使用区域种子决定
-            int regionSeed = regionX * 341873128712 + regionZ * 132897987541 + spacing;
+            int regionSeed = (int)(regionX * 341873128712 + regionZ * 132897987541 + spacing);
             Random regionRandom = new Random(regionSeed);
             return regionRandom.NextDouble() < 0.5;
         }

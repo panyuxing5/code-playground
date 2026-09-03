@@ -30,7 +30,60 @@ namespace VoxelCraft.Entities
         PrimedTNT,
         FallingBlock,
         Boat,
-        Minecart
+        Minecart,
+        Allay,
+        Bee,
+        Camel,
+        Donkey,
+        Fox,
+        Frog,
+        Goat,
+        Hoglin,
+        Horse,
+        Llama,
+        Mule,
+        Ocelot,
+        Parrot,
+        Sniffer,
+        Strider,
+        Tadpole
+    }
+
+    public enum StatusEffect
+    {
+        None,
+        Speed,
+        Slowness,
+        Haste,
+        MiningFatigue,
+        Strength,
+        InstantHealth,
+        InstantDamage,
+        JumpBoost,
+        Nausea,
+        Regeneration,
+        Resistance,
+        FireResistance,
+        WaterBreathing,
+        Invisibility,
+        Blindness,
+        NightVision,
+        Hunger,
+        Weakness,
+        Poison,
+        Wither,
+        HealthBoost,
+        Absorption,
+        Saturation,
+        Glowing,
+        Levitation,
+        Luck,
+        BadLuck,
+        SlowFalling,
+        ConduitPower,
+        DolphinsGrace,
+        BadOmen,
+        HeroOfTheVillage
     }
 
     public abstract class Entity
@@ -43,20 +96,26 @@ namespace VoxelCraft.Entities
         public float Yaw { get; set; }
         public float Pitch { get; set; }
 
+        public Vector3 Forward => new Vector3(
+            (float)(Math.Sin(Yaw) * Math.Cos(Pitch)),
+            (float)Math.Sin(Pitch),
+            (float)(Math.Cos(Yaw) * Math.Cos(Pitch))
+        );
+
         public float Width { get; protected set; } = 0.6f;
         public float Height { get; protected set; } = 1.8f;
         public float EyeHeight { get; protected set; } = 1.62f;
 
         public float Health { get; set; }
         public float MaxHealth { get; protected set; }
-        public bool IsDead { get; protected set; }
+        public bool IsDead { get; set; }
         public bool IsOnGround { get; set; }
         public bool IsInWater { get; set; }
         public bool IsInLava { get; set; }
         public bool IsOnFire { get; set; }
         public int FireTicks { get; set; }
 
-        public int Age { get; protected set; }
+        public int Age { get; set; }
         public int Lifetime { get; protected set; } = -1; // -1 = 无限
 
         public bool NoGravity { get; set; }
@@ -81,6 +140,16 @@ namespace VoxelCraft.Entities
             MaxHealth = 20;
         }
 
+        public void AddEffect(object effect)
+        {
+            // 添加状态效果
+        }
+
+        public void AddEffect(StatusEffect effect, int duration, float amplifier)
+        {
+            // 添加状态效果
+        }
+
         public virtual void Update(float deltaTime)
         {
             Age++;
@@ -96,8 +165,8 @@ namespace VoxelCraft.Entities
             // 重力
             if (!NoGravity && !IsOnGround)
             {
-                Velocity.Y -= 25.0f * deltaTime;
-                Velocity.Y = Math.Max(Velocity.Y, -50.0f);
+                Velocity = new Vector3(Velocity.X, Velocity.Y - 25.0f * deltaTime, Velocity.Z);
+                Velocity = new Vector3(Velocity.X, Math.Max(Velocity.Y, -50.0f), Velocity.Z);
             }
 
             // 移动
@@ -208,6 +277,11 @@ namespace VoxelCraft.Entities
             }
         }
 
+        public void TakeDamage(float amount)
+        {
+            TakeDamage(amount, "generic");
+        }
+
         protected virtual void OnDamage(float amount, string cause)
         {
             // 子类可以重写
@@ -274,7 +348,7 @@ namespace VoxelCraft.Entities
             direction.Y = 0;
             direction.Normalize();
             Velocity += direction * strength;
-            Velocity.Y = strength * 0.5f;
+            Velocity = new Vector3(Velocity.X, strength * 0.5f, Velocity.Z);
         }
 
         public abstract void Render();
@@ -285,22 +359,22 @@ namespace VoxelCraft.Entities
     // ========================================
     public abstract class Mob : Entity
     {
-        public AIState CurrentState { get; protected set; }
+        public AIState CurrentState { get; set; }
         public Entity Target { get; set; }
-        public float MovementSpeed { get; protected set; } = 1.0f;
-        public float AttackDamage { get; protected set; } = 2.0f;
-        public float AttackRange { get; protected set; } = 1.5f;
-        public float DetectionRange { get; protected set; } = 16.0f;
-        public float FollowRange { get; protected set; } = 32.0f;
-        public int AttackCooldown { get; protected set; }
-        public int MaxAttackCooldown { get; protected set; } = 20;
+        public float MovementSpeed { get; set; } = 1.0f;
+        public float AttackDamage { get; set; } = 2.0f;
+        public float AttackRange { get; set; } = 1.5f;
+        public float DetectionRange { get; set; } = 16.0f;
+        public float FollowRange { get; set; } = 32.0f;
+        public int AttackCooldown { get; set; }
+        public int MaxAttackCooldown { get; set; } = 20;
 
-        public bool IsHostile { get; protected set; }
-        public bool IsPassive { get; protected set; }
-        public bool IsNeutral { get; protected set; }
+        public bool IsHostile { get; set; }
+        public bool IsPassive { get; set; }
+        public bool IsNeutral { get; set; }
 
-        public Vector3 WanderTarget { get; protected set; }
-        public int WanderCooldown { get; protected set; }
+        public Vector3 WanderTarget { get; set; }
+        public int WanderCooldown { get; set; }
 
         protected AIBase ai;
 
@@ -308,6 +382,10 @@ namespace VoxelCraft.Entities
         {
             CurrentState = AIState.Idle;
             ai = new AIBase(world, this);
+        }
+
+        public Mob() : this(null)
+        {
         }
 
         public override void Update(float deltaTime)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 using VoxelCraft.Core;
+using VoxelCraft.UI;
 
 namespace VoxelCraft.Core
 {
@@ -233,7 +234,7 @@ namespace VoxelCraft.Core
                     currentY += optionHeight + optionSpacing;
                     RenderSlider(uiManager, x, currentY, width, "聊天大小", (int)(settings.ChatScale * 100), 50, 150, "%");
                     currentY += optionHeight + optionSpacing;
-                    RenderSlider(uiManager, x, currentY, width, "聊天行间距", settings.ChatLineSpacing, 0, 20, "px");
+                    RenderSlider(uiManager, x, currentY, width, "聊天行间距", (int)settings.ChatLineSpacing, 0, 20, "px");
                     currentY += optionHeight + optionSpacing;
                     RenderToggle(uiManager, x, currentY, width, "减少聊天背景", settings.ReducedChatBackground);
                     break;

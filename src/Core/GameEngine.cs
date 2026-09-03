@@ -68,6 +68,16 @@ namespace VoxelCraft.Core
         public bool IsDaytime => WorldTime % GameConstants.DAY_LENGTH_TICKS < GameConstants.SUNSET_TICK;
         public bool IsNight => !IsDaytime;
         public float DayProgress => (float)(WorldTime % GameConstants.DAY_LENGTH_TICKS) / GameConstants.DAY_LENGTH_TICKS;
+        public long DayTime
+        {
+            get => WorldTime % GameConstants.DAY_LENGTH_TICKS;
+            set => WorldTime = value;
+        }
+        public new float Time
+        {
+            get => TotalTime;
+            set { }
+        }
 
         // ========================================
         // 核心系统
@@ -78,7 +88,6 @@ namespace VoxelCraft.Core
         public TextureManager Textures { get; private set; }
         public WorldManager World { get; private set; }
         public ChunkManager Chunks { get; private set; }
-        public BlockRegistry Blocks { get; private set; }
         public ItemRegistry Items { get; private set; }
         public CraftingSystem Crafting { get; private set; }
         public PlayerController Player { get; private set; }
@@ -158,9 +167,7 @@ namespace VoxelCraft.Core
         {
             return new GameWindowSettings
             {
-                RenderFrequency = GameConstants.MAX_FPS,
-                UpdateFrequency = GameConstants.TARGET_UPS,
-                IsMultiThreaded = false
+                UpdateFrequency = GameConstants.TARGET_UPS
             };
         }
 
@@ -255,18 +262,15 @@ namespace VoxelCraft.Core
 
             Input = new InputManager(this);
             MainCamera = new Camera();
-            Shaders = new ShaderManager();
+            Shaders = new ShaderManager("assets/shaders");
             Textures = new TextureManager();
-            Blocks = new BlockRegistry();
-            Items = new ItemRegistry();
-            Crafting = new CraftingSystem();
             Particles = new ParticleSystem();
-            Profiler = new Profiler();
+            Profiler = Profiler.Instance;
 
-            Blocks.RegisterAllBlocks();
-            Items.RegisterAllItems();
-            Crafting.RegisterAllRecipes();
-            Shaders.LoadAllShaders();
+            BlockRegistry.RegisterAllBlocks();
+            ItemRegistry.Initialize();
+            CraftingSystem.Initialize();
+            Shaders.Initialize();
             Textures.LoadAllTextures();
 
             Console.WriteLine("[GameEngine] 核心系统初始化完成");
@@ -314,7 +318,7 @@ namespace VoxelCraft.Core
 
             UI = new UIManager();
             UI.Initialize();
-            UI.ShowMainMenu();
+            UI.ShowMainMenu(true);
 
             Console.WriteLine("[GameEngine] UI 初始化完成");
         }
@@ -599,7 +603,7 @@ namespace VoxelCraft.Core
             }
 
             // 更新实体
-            Entities.Update(DeltaTime);
+            Entities.Update(DeltaTime, Player);
             EntitiesRendered = Entities.EntityCount;
 
             // 更新粒子
@@ -610,7 +614,7 @@ namespace VoxelCraft.Core
             }
 
             // 更新音频
-            Sounds?.Update();
+            Sounds?.Update(DeltaTime);
 
             // 自动保存
             if (WorldTime % GameConstants.AUTOSAVE_INTERVAL_TICKS == 0 && WorldTime > 0)
@@ -747,7 +751,7 @@ namespace VoxelCraft.Core
         {
             GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            UI.RenderLoadingScreen();
+            UI.RenderLoadingScreen("加载中...", 0.5f);
         }
 
         private void RenderWorld()
@@ -814,23 +818,7 @@ namespace VoxelCraft.Core
 
         private void RenderDebugInfo()
         {
-            UI.RenderDebugInfo(
-                FPS,
-                UPS,
-                FrameTimeMs,
-                UpdateTimeMs,
-                RenderTimeMs,
-                ChunksLoaded,
-                ChunksRendered,
-                EntitiesRendered,
-                ParticlesActive,
-                MemoryUsed,
-                Player.Position,
-                WorldTime,
-                DayCount,
-                CurrentGameMode.ToString(),
-                CurrentDifficulty.ToString()
-            );
+            UI.RenderDebugInfo();
         }
 
         // ========================================
@@ -929,7 +917,8 @@ namespace VoxelCraft.Core
 
         public Vector3 GetLookAtBlock()
         {
-            return Player.GetLookAtBlock();
+            Vector3i? block = Player.GetLookAtBlock();
+            return block.HasValue ? new Vector3(block.Value.X, block.Value.Y, block.Value.Z) : Vector3.Zero;
         }
 
         public Vector3? GetRaycastHit(float maxDistance)
@@ -950,6 +939,16 @@ namespace VoxelCraft.Core
         public void PlayStepSound(string blockType)
         {
             Sounds?.PlaySound($"step.{blockType}", Player.Position);
+        }
+
+        // 扩展属性和方法
+        public bool IsCursorVisible { get; set; } = true;
+        public bool CursorGrabbed { get; set; }
+        public bool CursorVisible { get; set; } = true;
+
+        public void Stop()
+        {
+            // 停止游戏
         }
     }
 

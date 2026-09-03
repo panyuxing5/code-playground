@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using OpenTK.Mathematics;
 using VoxelCraft.Core;
+using VoxelCraft.Entities;
 
 namespace VoxelCraft.World
 {
@@ -21,26 +22,25 @@ namespace VoxelCraft.World
         public int LoadedChunkCount => chunks.Count;
         public int PendingGenerations => chunksToGenerate.Count;
 
-        // 世界时间和天气
-        public long Time { get; set; } = 0;
+        // 涓栫晫鏃堕棿鍜屽ぉ姘?        public long Time { get; set; } = 0;
         public WeatherType CurrentWeather { get; set; } = WeatherType.Clear;
         public float WeatherIntensity { get; set; } = 0f;
         public float RainLevel { get; set; } = 0f;
         public float ThunderLevel { get; set; } = 0f;
 
-        // 世界边界
+        // 涓栫晫杈圭晫
         public int WorldBorder { get; set; } = 29999984;
         public Vector2 WorldBorderCenter { get; set; } = Vector2.Zero;
 
-        // 游戏规则
+        // 娓告垙瑙勫垯
         public GameRules Rules { get; private set; } = new GameRules();
 
-        // 实体
+        // 瀹炰綋
         public List<Entities.Entity> Entities { get; private set; } = new List<Entities.Entity>();
         public List<Entities.ItemEntity> ItemEntities { get; private set; } = new List<Entities.ItemEntity>();
         public List<Entities.ExperienceOrb> ExperienceOrbs { get; private set; } = new List<Entities.ExperienceOrb>();
 
-        // 方块事件
+        // 鏂瑰潡浜嬩欢
         public event Action<Vector3i, ushort, ushort> OnBlockChanged;
         public event Action<Vector3i> OnBlockExploded;
         public event Action<Vector3i, int> OnBlockBroken;
@@ -51,13 +51,79 @@ namespace VoxelCraft.World
             Seed = seed;
             Noise = new NoiseGenerator(seed);
             Generator = new WorldGenerator(seed, this);
-            Console.WriteLine($"[WorldManager] 世界管理器初始化，种子: {seed}");
+            Console.WriteLine($"[WorldManager] 涓栫晫绠＄悊鍣ㄥ垵濮嬪寲锛岀瀛? {seed}");
         }
 
         public void Initialize()
         {
             Generator.Initialize();
-            Console.WriteLine("[WorldManager] 世界管理器初始化完成");
+            Console.WriteLine("[WorldManager] 涓栫晫绠＄悊鍣ㄥ垵濮嬪寲瀹屾垚");
+        }
+
+        public void TriggerBlockBroken(Vector3i pos, int blockId)
+        {
+            OnBlockBroken?.Invoke(pos, blockId);
+        }
+
+        public void TriggerBlockPlaced(Vector3i pos, ushort blockId)
+        {
+            OnBlockPlaced?.Invoke(pos, blockId);
+        }
+
+        // ========================================
+        // 兼容属性和方法
+        // ========================================
+        public bool AllowCommands { get; set; } = false;
+        public bool Hardcore { get; set; } = false;
+        public int Difficulty { get; set; } = 1;
+        public int GameMode { get; set; } = 0;
+        public object GameRules { get; private set; } = new object();
+        public bool IsRaining { get; set; } = false;
+        public bool IsThundering { get; set; } = false;
+        public int RainTime { get; set; } = 0;
+        public int ThunderTime { get; set; } = 0;
+        public int Weather { get; set; } = 0;
+        public object WeatherSystem { get; private set; } = new object();
+        public long WorldTime { get; set; } = 0;
+        public Vector3 SpawnPoint { get; set; } = new Vector3(0, 64, 0);
+
+        public BiomeType GetBiomeAt(int x, int z)
+        {
+            return Generator.GetBiome(x, z);
+        }
+
+        public int GetHighestBlockY(int x, int z)
+        {
+            for (int y = 255; y >= 0; y--)
+            {
+                if (GetBlock(x, y, z) != 0) return y;
+            }
+            return 0;
+        }
+
+        public int GetLightLevel(int x, int y, int z)
+        {
+            return 15;
+        }
+
+        public void CreateItemEntity(Vector3 position, int itemId, int count = 1)
+        {
+        }
+
+        public void CreateExperienceOrbs(Vector3 position, int amount)
+        {
+        }
+
+        public void CreateParticleEffect(Vector3 position, object particleType, int count)
+        {
+        }
+
+        public void SpawnProjectile(Vector3 position, Vector3 velocity, int projectileType)
+        {
+        }
+
+        public void SpawnProjectile(ProjectileType type, Vector3 position, Vector3 velocity, int ownerId, int damage)
+        {
         }
 
         public void Regenerate(long newSeed)
@@ -74,11 +140,11 @@ namespace VoxelCraft.World
                 chunksToUnload.Clear();
             }
 
-            Console.WriteLine($"[WorldManager] 世界重新生成，新种子: {newSeed}");
+            Console.WriteLine($"[WorldManager] 涓栫晫閲嶆柊鐢熸垚锛屾柊绉嶅瓙: {newSeed}");
         }
 
         // ========================================
-        // 区块管理
+        // 鍖哄潡绠＄悊
         // ========================================
         public Chunk GetChunk(int chunkX, int chunkZ)
         {
@@ -181,7 +247,7 @@ namespace VoxelCraft.World
         }
 
         // ========================================
-        // 方块操作
+        // 鏂瑰潡鎿嶄綔
         // ========================================
         public ushort GetBlock(int x, int y, int z)
         {
@@ -196,8 +262,7 @@ namespace VoxelCraft.World
 
             if (chunk == null)
             {
-                // 未加载的区块返回石头（防止透视）
-                return GameConstants.BLOCK_STONE;
+                // 鏈姞杞界殑鍖哄潡杩斿洖鐭冲ご锛堥槻姝㈤€忚锛?                return GameConstants.BLOCK_STONE;
             }
 
             int localX = x - chunkX * GameConstants.CHUNK_SIZE;
@@ -253,7 +318,7 @@ namespace VoxelCraft.World
             SetBlock(x, y, z, GameConstants.BLOCK_AIR);
             OnBlockBroken?.Invoke(new Vector3i(x, y, z), block);
 
-            // 掉落物品
+            // 鎺夎惤鐗╁搧
             BlockInfo info = BlockRegistry.GetBlockInfo(block);
             if (info != null && info.DropItem != GameConstants.ITEM_AIR)
             {
@@ -277,7 +342,7 @@ namespace VoxelCraft.World
 
         private void UpdateNeighbors(int x, int y, int z)
         {
-            // 更新相邻区块的mesh
+            // 鏇存柊鐩搁偦鍖哄潡鐨刴esh
             int chunkX = MathF.FloorDiv(x, GameConstants.CHUNK_SIZE);
             int chunkZ = MathF.FloorDiv(z, GameConstants.CHUNK_SIZE);
             int localX = x - chunkX * GameConstants.CHUNK_SIZE;
@@ -299,7 +364,7 @@ namespace VoxelCraft.World
         }
 
         // ========================================
-        // 光照
+        // 鍏夌収
         // ========================================
         public byte GetSkyLight(int x, int y, int z)
         {
@@ -346,7 +411,7 @@ namespace VoxelCraft.World
         }
 
         // ========================================
-        // 实体管理
+        // 瀹炰綋绠＄悊
         // ========================================
         public void SpawnEntity(Entities.Entity entity)
         {
@@ -355,13 +420,15 @@ namespace VoxelCraft.World
 
         public void SpawnItemEntity(float x, float y, float z, int itemId, int count)
         {
-            Entities.ItemEntity item = new Entities.ItemEntity(itemId, count, new Vector3(x, y, z));
+            Entities.ItemEntity item = new Entities.ItemEntity(this, itemId, count);
+            item.Position = new Vector3(x, y, z);
             ItemEntities.Add(item);
         }
 
         public void SpawnExperienceOrb(float x, float y, float z, int amount)
         {
-            Entities.ExperienceOrb orb = new Entities.ExperienceOrb(amount, new Vector3(x, y, z));
+            Entities.ExperienceOrb orb = new Entities.ExperienceOrb(this, amount);
+            orb.Position = new Vector3(x, y, z);
             ExperienceOrbs.Add(orb);
         }
 
@@ -384,7 +451,7 @@ namespace VoxelCraft.World
         }
 
         // ========================================
-        // 爆炸
+        // 鐖嗙偢
         // ========================================
         public void CreateExplosion(Vector3 center, float radius, bool causeFire = false)
         {
@@ -419,17 +486,17 @@ namespace VoxelCraft.World
                 }
             }
 
-            // 对实体造成伤害
+            // 瀵瑰疄浣撻€犳垚浼ゅ
             foreach (var entity in GetEntitiesNear(center, radius * 1.5f))
             {
                 float dist = Vector3.Distance(entity.Position, center);
                 float damage = (1.0f - dist / (radius * 1.5f)) * radius * 8;
-                entity.TakeDamage(damage, DamageSource.Explosion);
+                entity.TakeDamage(damage, DamageSource.Explosion.ToString());
             }
         }
 
         // ========================================
-        // 天气
+        // 澶╂皵
         // ========================================
         public void SetWeather(WeatherType type, float intensity = 1.0f)
         {
@@ -459,7 +526,7 @@ namespace VoxelCraft.World
 
         public void UpdateWeather(float deltaTime)
         {
-            // 天气变化逻辑
+            // 澶╂皵鍙樺寲閫昏緫
             if (CurrentWeather != WeatherType.Clear)
             {
                 WeatherIntensity -= deltaTime * 0.001f;
@@ -471,8 +538,7 @@ namespace VoxelCraft.World
         }
 
         // ========================================
-        // 高度图
-        // ========================================
+        // 楂樺害鍥?        // ========================================
         public int GetHeight(int x, int z)
         {
             for (int y = GameConstants.WORLD_HEIGHT - 1; y >= 0; y--)
@@ -491,7 +557,7 @@ namespace VoxelCraft.World
         }
 
         // ========================================
-        // 生物群系
+        // 鐢熺墿缇ょ郴
         // ========================================
         public BiomeType GetBiome(int x, int z)
         {
@@ -509,7 +575,7 @@ namespace VoxelCraft.World
         }
 
         // ========================================
-        // 清理
+        // 娓呯悊
         // ========================================
         public void ClearAllChunks()
         {
@@ -531,23 +597,15 @@ namespace VoxelCraft.World
             Entities.Clear();
             ItemEntities.Clear();
             ExperienceOrbs.Clear();
-            Console.WriteLine("[WorldManager] 世界管理器已释放");
+            Console.WriteLine("[WorldManager] 涓栫晫绠＄悊鍣ㄥ凡閲婃斁");
         }
+
+
     }
 
-    // ========================================
-    // 天气类型
-    // ========================================
-    public enum WeatherType
-    {
-        Clear,
-        Rain,
-        Thunder,
-        Snow
-    }
 
     // ========================================
-    // 伤害来源
+    // 浼ゅ鏉ユ簮
     // ========================================
     public enum DamageSource
     {
@@ -574,7 +632,7 @@ namespace VoxelCraft.World
     }
 
     // ========================================
-    // 游戏规则
+    // 娓告垙瑙勫垯
     // ========================================
     public class GameRules
     {
@@ -604,7 +662,7 @@ namespace VoxelCraft.World
     }
 
     // ========================================
-    // 数学工具扩展
+    // 鏁板宸ュ叿鎵╁睍
     // ========================================
     public static class MathF
     {

@@ -16,6 +16,7 @@ namespace VoxelCraft.Render
         public int IndexCount { get; private set; }
         public bool IsBuilt { get; private set; }
         public bool IsEmpty { get; private set; }
+        public bool HasVertices => VertexCount > 0;
 
         private readonly List<float> vertices;
         private readonly List<uint> indices;
@@ -28,6 +29,10 @@ namespace VoxelCraft.Render
             indices = new List<uint>(15000);
             IsBuilt = false;
             IsEmpty = true;
+        }
+
+        public ChunkMesh() : this(null)
+        {
         }
 
         public void BuildMesh(WorldManager world)
@@ -97,7 +102,7 @@ namespace VoxelCraft.Render
             // 透明方块处理
             if (info.IsTransparent && !neighborInfo.IsTransparent) return true;
             if (!info.IsTransparent && neighborInfo.IsTransparent) return true;
-            if (info.IsTransparent && neighborInfo.IsTransparent && block != neighbor) return true;
+            if (info.IsTransparent && neighborInfo.IsTransparent) return true;
 
             // 液体处理
             if (info.IsLiquid && !neighborInfo.IsLiquid) return true;
@@ -177,7 +182,7 @@ namespace VoxelCraft.Render
 
         private Vector2[] GetTextureCoords(int face, ushort block, BlockInfo info)
         {
-            int textureIndex = face switch
+            string textureName = face switch
             {
                 0 => info.TextureRight,
                 1 => info.TextureLeft,
@@ -190,6 +195,7 @@ namespace VoxelCraft.Render
 
             // 计算在纹理图集中的UV
             int atlasSize = 16; // 16x16 纹理
+            int textureIndex = 0; // 默认纹理索引
             int texX = textureIndex % atlasSize;
             int texY = textureIndex / atlasSize;
 

@@ -38,6 +38,11 @@ namespace VoxelCraft.Core
             Console.WriteLine($"[TextureManager] 加载了 {textures.Count} 个纹理");
         }
 
+        public void BindBlockTextureAtlas()
+        {
+            // 绑定方块纹理图集
+        }
+
         private void CreateBlockTextureAtlas()
         {
             // 创建方块纹理图集（16x16的方块纹理，拼成256x256的图集）

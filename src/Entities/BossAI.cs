@@ -281,7 +281,7 @@ namespace VoxelCraft.Entities
 
         private void PerformAttack(Boss boss, Vector3 playerPosition)
         {
-            boss.AttackCooldownTimer = AttackCooldown;
+            boss.AttackCooldownTimer = (int)AttackCooldown;
             boss.CurrentState = BossState.Chasing;
 
             // 造成伤害
@@ -305,7 +305,7 @@ namespace VoxelCraft.Entities
 
         private void PerformSpecialAttack(Boss boss, Vector3 playerPosition)
         {
-            boss.SpecialAttackCooldownTimer = SpecialAttackCooldown;
+            boss.SpecialAttackCooldownTimer = (int)SpecialAttackCooldown;
             boss.CurrentState = BossState.Chasing;
 
             // 根据Boss类型执行不同的特殊攻击
@@ -415,15 +415,15 @@ namespace VoxelCraft.Entities
             Vector3 direction = (target - boss.Position).Normalized();
             direction.Y = 0;
 
-            boss.Velocity.X = direction.X * speed;
-            boss.Velocity.Z = direction.Z * speed;
+            boss.Velocity = new Vector3(direction.X * speed, boss.Velocity.Y, boss.Velocity.Z);
+            boss.Velocity = new Vector3(boss.Velocity.X, boss.Velocity.Y, direction.Z * speed);
 
             // 检查是否需要跳
             if (IsBlockAhead(boss))
             {
                 if (boss.OnGround)
                 {
-                    boss.Velocity.Y = 0.5f;
+                    boss.Velocity = new Vector3(boss.Velocity.X, 0.5f, boss.Velocity.Z);
                 }
             }
         }
@@ -508,11 +508,25 @@ namespace VoxelCraft.Entities
         public bool HasTarget;
         public bool IsVisible = true;
         public Vector3 TargetPosition;
+        public bool IsBoss { get; set; } = true;
 
         public Boss()
         {
             CurrentState = BossState.Idle;
             IsBoss = true;
+        }
+
+        public override void Render()
+        {
+            // Boss渲染由EntityRenderer处理
+        }
+
+        // 扩展属性和方法
+        public new bool OnGround { get; set; }
+
+        public Vector3 GetLookVector()
+        {
+            return Forward;
         }
     }
 

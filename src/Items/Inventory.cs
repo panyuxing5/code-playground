@@ -25,6 +25,10 @@ namespace VoxelCraft.Items
             }
         }
 
+        public ItemStack() : this(0, 0)
+        {
+        }
+
         public ItemInfo GetItemInfo()
         {
             return ItemRegistry.GetItem(ItemId);
@@ -85,6 +89,14 @@ namespace VoxelCraft.Items
         public int Size { get; }
         public string Name { get; set; }
 
+        // 扩展属性（玩家状态相关）
+        public int Experience { get; set; }
+        public int ExperienceLevel { get; set; }
+        public int Health { get; set; } = 20;
+        public int Hunger { get; set; } = 20;
+        public int MaxHealth { get; set; } = 20;
+        public int MaxHunger { get; set; } = 20;
+
         // 快捷栏索引范围
         public const int HotbarSize = 9;
         public int HotbarStart { get; protected set; }
@@ -107,6 +119,11 @@ namespace VoxelCraft.Items
         {
             if (index < 0 || index >= Size) return null;
             return Slots[index];
+        }
+
+        public ItemStack GetItem(int index)
+        {
+            return GetSlot(index);
         }
 
         public void SetSlot(int index, ItemStack stack)

@@ -12,6 +12,7 @@ namespace VoxelCraft.World
         public bool IsGenerated { get; set; } = false;
         public bool IsDirty { get; set; } = true;
         public bool IsMeshBuilt { get; set; } = false;
+        public bool IsMeshDirty { get; set; } = true;
         public bool HasEntities { get; set; } = false;
 
         // 方块数据
@@ -21,9 +22,9 @@ namespace VoxelCraft.World
         private byte[] metadata;
 
         // 渲染数据
-        public ChunkMesh Mesh { get; private set; }
-        public ChunkMesh WaterMesh { get; private set; }
-        public ChunkMesh TransparentMesh { get; private set; }
+        public ChunkMesh Mesh { get; set; }
+        public ChunkMesh WaterMesh { get; set; }
+        public ChunkMesh TransparentMesh { get; set; }
 
         // 统计
         public int SolidBlockCount { get; private set; }
@@ -216,8 +217,8 @@ namespace VoxelCraft.World
                 TransparentMesh = new ChunkMesh();
             }
 
-            MeshBuilder builder = new MeshBuilder(world, this);
-            builder.BuildMesh();
+            MeshBuilder builder = new MeshBuilder(world);
+            builder.RebuildChunkMesh(this);
 
             IsMeshBuilt = true;
             IsDirty = false;

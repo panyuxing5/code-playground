@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using OpenTK.Mathematics;
 using VoxelCraft.Core;
+using VoxelCraft.World;
 
 namespace VoxelCraft.Audio
 {

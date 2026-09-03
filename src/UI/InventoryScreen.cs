@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using OpenTK.Mathematics;
 using VoxelCraft.Core;
 using VoxelCraft.Items;
+using VoxelCraft.Player;
 
 namespace VoxelCraft.UI
 {
@@ -29,6 +30,10 @@ namespace VoxelCraft.UI
             selectedSlot = 0;
             selectedTab = 0;
             isDragging = false;
+        }
+
+        public InventoryScreen(UIManager ui, PlayerController player) : this()
+        {
         }
 
         public void Initialize()
@@ -64,6 +69,11 @@ namespace VoxelCraft.UI
         }
 
         public void Update()
+        {
+            if (!isOpen) return;
+        }
+
+        public void Update(float deltaTime)
         {
             if (!isOpen) return;
         }

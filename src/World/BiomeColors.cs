@@ -532,7 +532,7 @@ namespace VoxelCraft.World
             Vector3 baseColor = GetGrassColor(biome);
 
             // 添加一些基于位置的变化
-            float noise = (float)Math.Sin(x * 0.01) * Math.Cos(z * 0.01) * 0.05f;
+            float noise = (float)(Math.Sin(x * 0.01) * Math.Cos(z * 0.01) * 0.05f);
             return new Vector3(
                 Math.Clamp(baseColor.X + noise, 0, 1),
                 Math.Clamp(baseColor.Y + noise, 0, 1),
@@ -544,7 +544,7 @@ namespace VoxelCraft.World
         {
             Vector3 baseColor = GetFoliageColor(biome);
 
-            float noise = (float)Math.Sin(x * 0.015) * Math.Cos(z * 0.015) * 0.05f;
+            float noise = (float)(Math.Sin(x * 0.015) * Math.Cos(z * 0.015) * 0.05f);
             return new Vector3(
                 Math.Clamp(baseColor.X + noise, 0, 1),
                 Math.Clamp(baseColor.Y + noise, 0, 1),

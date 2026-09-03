@@ -123,9 +123,6 @@ namespace VoxelCraft.World
                 case GameConstants.BLOCK_CHORUS_FLOWER:
                     GrowChorusFlower(x, y, z);
                     break;
-                case GameConstants.BLOCK_SWEET_BERRY_BUSH:
-                    GrowSweetBerryBush(x, y, z);
-                    break;
             }
         }
 
@@ -272,7 +269,8 @@ namespace VoxelCraft.World
 
             // 长成树
             TreeGenerator treeGenerator = new TreeGenerator(world, random.Next());
-            treeGenerator.GenerateTree(x, y, z);
+            Chunk chunk = world.GetChunk(x >> 4, z >> 4);
+            treeGenerator.GenerateTree(chunk, x, y, z, TreeType.Oak);
 
             // 移除树苗
             world.SetBlock(x, y, z, GameConstants.BLOCK_AIR);

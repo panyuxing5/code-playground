@@ -92,8 +92,8 @@ namespace VoxelCraft.Core
             leftLines.Add($"");
 
             // 世界信息
-            leftLines.Add($"世界时间: {world.WorldTime} ({GetTimeOfDay(world.WorldTime)})");
-            leftLines.Add($"天气: {world.WeatherSystem.CurrentWeather}");
+            leftLines.Add($"世界时间: {world.WorldTime} ({GetTimeOfDay((int)world.WorldTime)})");
+            leftLines.Add($"天气: {world.Weather}");
             leftLines.Add($"难度: {world.Difficulty}");
             leftLines.Add($"");
 
@@ -163,9 +163,9 @@ namespace VoxelCraft.Core
 
             // 游戏规则
             rightLines.Add("=== 游戏规则 ===");
-            rightLines.Add($"昼夜循环: {(world.GameRules.GetBool("doDaylightCycle") ? "开" : "关")}");
-            rightLines.Add($"天气循环: {(world.GameRules.GetBool("doWeatherCycle") ? "开" : "关")}");
-            rightLines.Add($"生物生成: {(world.GameRules.GetBool("doMobSpawning") ? "开" : "关")}");
+            rightLines.Add($"昼夜循环: {(world.Rules.DoDaylightCycle ? "开" : "关")}");
+            rightLines.Add($"天气循环: {(world.Rules.DoWeatherCycle ? "开" : "关")}");
+            rightLines.Add($"生物生成: {(world.Rules.DoMobSpawning ? "开" : "关")}");
             rightLines.Add($"");
 
             // 玩家状态

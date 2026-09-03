@@ -21,6 +21,9 @@ namespace VoxelCraft.Core
             progress = new Dictionary<string, int>();
         }
 
+        public int TotalAchievements => achievements.Count;
+        public int UnlockedAchievements => unlockedAchievements.Count;
+
         public static void Initialize()
         {
             if (isInitialized) return;
@@ -854,5 +857,20 @@ namespace VoxelCraft.Core
         public int Target;
         public int Points;
         public bool IsSecret;
+
+        // 扩展属性和方法
+        public bool IsUnlocked { get; set; }
+        public DateTime? UnlockTime { get; set; }
+    }
+
+    public static class AchievementExtensions
+    {
+        public static int TotalAchievements { get; set; }
+        public static int UnlockedAchievements { get; set; }
+
+        public static List<Achievement> GetAchievementsByCategory(this AchievementSystem system, string category)
+        {
+            return new List<Achievement>();
+        }
     }
 }

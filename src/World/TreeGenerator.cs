@@ -22,6 +22,10 @@ namespace VoxelCraft.World
             random = new Random((int)seed);
         }
 
+        public TreeGenerator(WorldManager world, long seed) : this(seed)
+        {
+        }
+
         public void GenerateTree(Chunk chunk, int x, int y, int z, TreeType type)
         {
             switch (type)

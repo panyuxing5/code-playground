@@ -13,8 +13,7 @@ namespace VoxelCraft.World
         public BlockType Type { get; set; }
         public BlockMaterial Material { get; set; }
 
-        // 渲染属性
-        public bool IsSolid { get; set; } = true;
+        // 娓叉煋灞炴€?        public bool IsSolid { get; set; } = true;
         public bool IsOpaque { get; set; } = true;
         public bool IsTransparent { get; set; } = false;
         public bool IsLiquid { get; set; } = false;
@@ -40,11 +39,11 @@ namespace VoxelCraft.World
         public int ExperienceMin { get; set; } = 0;
         public int ExperienceMax { get; set; } = 0;
 
-        // 工具类型
+        // 宸ュ叿绫诲瀷
         public ToolType RequiredTool { get; set; } = ToolType.None;
         public ToolTier MinimumTier { get; set; } = ToolTier.Wood;
 
-        // 纹理
+        // 绾圭悊
         public string TextureTop { get; set; }
         public string TextureBottom { get; set; }
         public string TextureSide { get; set; }
@@ -61,22 +60,23 @@ namespace VoxelCraft.World
         public bool IsTickable { get; set; } = false;
         public int TickRate { get; set; } = 10;
 
-        // 声音
+        // 澹伴煶
         public string BreakSound { get; set; } = "block.stone.break";
         public string PlaceSound { get; set; } = "block.stone.place";
         public string StepSound { get; set; } = "block.stone.step";
         public string HitSound { get; set; } = "block.stone.hit";
         public string FallSound { get; set; } = "block.stone.fall";
 
-        // 粒子
+        // 绮掑瓙
         public int BreakParticleCount { get; set; } = 8;
         public bool SpawnBreakParticles { get; set; } = true;
 
-        // 燃烧
+        // 鐕冪儳
         public int BurnChance { get; set; } = 0;
         public int Encouragement { get; set; } = 0;
 
-        // 其他
+        // 鍏朵粬
+        public bool IsSolid { get; set; } = true;
         public bool IsCollidable { get; set; } = true;
         public bool IsSelectable { get; set; } = true;
         public float BoundingBoxMinY { get; set; } = 0f;
@@ -92,6 +92,12 @@ namespace VoxelCraft.World
             Name = name;
             TranslationKey = "block." + name;
             TextureAll = name;
+        }
+
+        public BlockInfo SetSelectable(bool selectable)
+        {
+            IsSelectable = selectable;
+            return this;
         }
 
         public BlockInfo SetType(BlockType type)
@@ -281,7 +287,7 @@ namespace VoxelCraft.World
 
         public float GetBreakTime(ToolType tool, ToolTier tier, float miningSpeed)
         {
-            if (Hardness < 0) return float.MaxValue; // 不可破坏
+            if (Hardness < 0) return float.MaxValue; // 涓嶅彲鐮村潖
 
             float baseTime = Hardness * 1.5f;
 
@@ -291,7 +297,7 @@ namespace VoxelCraft.World
             }
             else
             {
-                baseTime *= 5f; // 没有合适工具，挖掘速度变慢
+                baseTime *= 5f; // 娌℃湁鍚堥€傚伐鍏凤紝鎸栨帢閫熷害鍙樻參
             }
 
             return baseTime;
@@ -313,10 +319,44 @@ namespace VoxelCraft.World
         {
             return $"Block[{Id}: {Name}]";
         }
+    
+
+        // 扩展属性和方法
+        public string TextureFront { get; set; }
+        public string TextureBack { get; set; }
+        public string TextureLeft { get; set; }
+        public string TextureRight { get; set; }
+        public int Experience { get; set; }
+
+        public BlockInfo SetCollidable(bool collidable)
+        {
+            IsCollidable = collidable;
+            return this;
+        }
+
+        public BlockInfo SetExperience(int min, int max)
+        {
+            ExperienceMin = min;
+            ExperienceMax = max;
+            return this;
+        }
+
+        public BlockInfo SetSlipperiness(float value)
+        {
+            Slipperiness = value;
+            return this;
+        }
+
+        public BlockInfo SetSpeedFactor(float value)
+        {
+            SpeedFactor = value;
+            return this;
+        }
+
     }
 
     // ========================================
-    // 方块类型
+    // 鏂瑰潡绫诲瀷
     // ========================================
     public enum BlockType
     {
@@ -454,7 +494,7 @@ namespace VoxelCraft.World
     }
 
     // ========================================
-    // 方块材质
+    // 鏂瑰潡鏉愯川
     // ========================================
     public enum BlockMaterial
     {
@@ -510,11 +550,16 @@ namespace VoxelCraft.World
         Cherry,
         Bamboo,
         DecoratedPot,
+        Cloth,
+        Ground,
+        Metal,
+        Obsidian,
+        Rock,
         Custom
     }
 
     // ========================================
-    // 工具类型
+    // 宸ュ叿绫诲瀷
     // ========================================
     public enum ToolType
     {
@@ -528,7 +573,7 @@ namespace VoxelCraft.World
     }
 
     // ========================================
-    // 工具等级
+    // 宸ュ叿绛夌骇
     // ========================================
     public enum ToolTier
     {
@@ -539,6 +584,9 @@ namespace VoxelCraft.World
         Diamond = 4,
         Netherite = 5
     }
+
+
+}
 
     // ========================================
     // 方块面
@@ -552,100 +600,3 @@ namespace VoxelCraft.World
         East = 4,
         West = 5
     }
-
-    // ========================================
-    // 生物群系类型
-    // ========================================
-    public enum BiomeType
-    {
-        Ocean,
-        DeepOcean,
-        FrozenOcean,
-        DeepFrozenOcean,
-        ColdOcean,
-        DeepColdOcean,
-        LukewarmOcean,
-        DeepLukewarmOcean,
-        WarmOcean,
-        DeepWarmOcean,
-        River,
-        FrozenRiver,
-        Beach,
-        StoneShore,
-        SnowyBeach,
-        Forest,
-        WoodedHills,
-        FlowerForest,
-        BirchForest,
-        BirchForestHills,
-        TallBirchForest,
-        TallBirchHills,
-        DarkForest,
-        DarkForestHills,
-        Jungle,
-        JungleHills,
-        ModifiedJungle,
-        JungleEdge,
-        ModifiedJungleEdge,
-        BambooJungle,
-        BambooJungleHills,
-        Taiga,
-        TaigaHills,
-        TaigaMountains,
-        SnowyTaiga,
-        SnowyTaigaHills,
-        SnowyTaigaMountains,
-        GiantTreeTaiga,
-        GiantTreeTaigaHills,
-        GiantSpruceTaiga,
-        GiantSpruceTaigaHills,
-        Mountains,
-        MountainEdge,
-        WoodedMountains,
-        GravellyMountains,
-        ModifiedGravellyMountains,
-        SnowyMountains,
-        SnowyTundra,
-        SnowyTundraHills,
-        IceSpikes,
-        Plains,
-        SunflowerPlains,
-        Swamp,
-        SwampHills,
-        Desert,
-        DesertHills,
-        DesertLakes,
-        Savanna,
-        SavannaPlateau,
-        ShatteredSavanna,
-        ShatteredSavannaPlateau,
-        Badlands,
-        BadlandsPlateau,
-        ModifiedBadlandsPlateau,
-        WoodedBadlandsPlateau,
-        ModifiedWoodedBadlandsPlateau,
-        ErodedBadlands,
-        Mesa,
-        MesaPlateau,
-        MesaPlateauF,
-        MushroomFields,
-        MushroomFieldShore,
-        TheVoid,
-        NetherWastes,
-        WarpedForest,
-        CrimsonForest,
-        SoulSandValley,
-        BasaltDeltas,
-        TheEnd,
-        EndHighlands,
-        EndMidlands,
-        SmallEndIslands,
-        EndBarrens,
-        DripstoneCaves,
-        LushCaves,
-        DeepDark,
-        MangroveSwamp,
-        CherryGrove,
-        Custom
-    }
-}

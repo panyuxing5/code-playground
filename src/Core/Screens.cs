@@ -233,8 +233,8 @@ namespace VoxelCraft.Core
                 // 标题
                 if (currentY > -50 && currentY < screenHeight + 50)
                 {
-                    int titleWidth = uiManager.MeasureText(section.Title, 24);
-                    uiManager.DrawText(section.Title, (screenWidth - titleWidth) / 2, currentY, 24,
+                    int sectionTitleWidth = uiManager.MeasureText(section.Title, 24);
+                    uiManager.DrawText(section.Title, (screenWidth - sectionTitleWidth) / 2, currentY, 24,
                         new Color4(1.0f, 0.9f, 0.5f, 1f));
                 }
                 currentY += 50;
@@ -516,8 +516,8 @@ namespace VoxelCraft.Core
                     break;
 
                 case 5: // 玩家
-                    result["伤害 dealt"] = statistics.DamageDealt;
-                    result["伤害 taken"] = statistics.DamageTaken;
+                    result["伤害 dealt"] = (long)statistics.DamageDealt;
+                    result["伤害 taken"] = (long)statistics.DamageTaken;
                     result["恢复生命值"] = statistics.HealthRestored;
                     result["吃食物次数"] = statistics.FoodEaten;
                     break;

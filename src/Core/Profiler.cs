@@ -227,6 +227,22 @@ namespace VoxelCraft.Core
         {
             Console.WriteLine(GetPerformanceReport());
         }
+
+        // 扩展属性和方法
+        public float LastFrameTime { get; private set; }
+        public float MinFps { get; private set; } = float.MaxValue;
+        public float MaxFps { get; private set; } = float.MinValue;
+
+        public void Update(float deltaTime)
+        {
+            LastFrameTime = deltaTime;
+            if (deltaTime > 0)
+            {
+                float fps = 1.0f / deltaTime;
+                MinFps = Math.Min(MinFps, fps);
+                MaxFps = Math.Max(MaxFps, fps);
+            }
+        }
     }
 
     public class PerformanceCounter

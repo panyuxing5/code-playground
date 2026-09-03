@@ -650,6 +650,15 @@ namespace VoxelCraft.Core
             Console.WriteLine("[ShaderManager] 着色器重新加载完成");
         }
 
+        public void Dispose()
+        {
+            foreach (var shader in shaders.Values)
+            {
+                shader.Dispose();
+            }
+            shaders.Clear();
+        }
+
         // 默认着色器代码（简化版）
         private const string DefaultBlockVertexShader = @"
             #version 330 core
@@ -987,6 +996,37 @@ namespace VoxelCraft.Core
         public override string ToString()
         {
             return Name;
+        }
+
+        public void Use()
+        {
+            IsEnabled = true;
+        }
+
+        public void Unbind()
+        {
+            IsEnabled = false;
+        }
+
+        public void Dispose()
+        {
+            // 释放着色器资源
+        }
+
+        public void SetFloat(string name, float value)
+        {
+        }
+
+        public void SetVector3(string name, Vector3 value)
+        {
+        }
+
+        public void SetVector4(string name, Vector4 value)
+        {
+        }
+
+        public void SetMatrix4(string name, Matrix4 value)
+        {
         }
     }
 }

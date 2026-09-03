@@ -791,23 +791,6 @@ namespace VoxelCraft.Core
         }
     }
 
-    public enum GameMode
-    {
-        Survival,
-        Creative,
-        Adventure,
-        Spectator,
-        Hardcore
-    }
-
-    public enum Difficulty
-    {
-        Peaceful,
-        Easy,
-        Normal,
-        Hard
-    }
-
     public enum DamageType
     {
         Fall,

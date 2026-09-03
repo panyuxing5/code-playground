@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
 
@@ -59,6 +60,16 @@ namespace VoxelCraft.Core
         {
             this.window = window;
             InitializeBindings();
+        }
+
+        public Vector2 GetMouseDelta()
+        {
+            return MouseDelta;
+        }
+
+        public float GetMouseScroll()
+        {
+            return MouseWheelDelta;
         }
 
         private void InitializeBindings()
@@ -440,14 +451,12 @@ namespace VoxelCraft.Core
         // ========================================
         public void LockMouse()
         {
-            window.CursorGrabbed = true;
-            window.CursorVisible = false;
+            // window.CursorVisible = false;
         }
 
         public void UnlockMouse()
         {
-            window.CursorGrabbed = false;
-            window.CursorVisible = true;
+            // window.CursorVisible = true;
         }
 
         public void SetMousePosition(float x, float y)

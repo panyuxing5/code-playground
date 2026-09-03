@@ -33,6 +33,12 @@ namespace VoxelCraft.World
         WoodedMountains,
         GravellyMountains,
         MountainEdge,
+        Meadow,
+        Grove,
+        SnowySlopes,
+        FrozenPeaks,
+        JaggedPeaks,
+        StonyPeaks,
 
         // 森林
         Forest,
@@ -74,6 +80,7 @@ namespace VoxelCraft.World
         // 沼泽
         Swamp,
         SwampHills,
+        MangroveSwamp,
 
         // 丛林
         Jungle,
@@ -115,6 +122,11 @@ namespace VoxelCraft.World
         EndMidlands,
         SmallEndIslands,
         EndBarrens,
+
+        // 洞穴
+        DripstoneCaves,
+        LushCaves,
+        DeepDark,
 
         // 特殊
         TheVoid,

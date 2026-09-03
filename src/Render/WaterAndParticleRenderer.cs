@@ -99,7 +99,7 @@ namespace VoxelCraft.Render
             waterShader.SetMatrix4("view", view);
             waterShader.SetMatrix4("projection", projection);
             waterShader.SetMatrix4("model", model);
-            waterShader.SetFloat("time", (float)GameEngine.Time);
+            waterShader.SetFloat("time", (float)GameEngine.Instance.Time);
             waterShader.SetFloat("waveSpeed", WaveSpeed);
             waterShader.SetFloat("waveHeight", WaveHeight);
             waterShader.SetVector3("waterColor", WaterColor);
@@ -336,7 +336,7 @@ namespace VoxelCraft.Render
             {
                 float alpha = particle.Life / particle.MaxLife;
                 Matrix4 model = Matrix4.CreateTranslation(particle.Position);
-                model *= Matrix4.CreateFromQuaternion(camera.Rotation); // 面向相机
+                model *= Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(camera.Rotation)); // 面向相机
 
                 particleShader.SetMatrix4("model", model);
                 particleShader.SetVector4("color", new Vector4(particle.Color, alpha));

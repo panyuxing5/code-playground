@@ -259,7 +259,7 @@ namespace VoxelCraft.Core
         {
             if (rules.TryGetValue(name, out GameRule rule))
             {
-                return $"{rule.name} = {rule.Value} (类型: {rule.Type}, 默认: {rule.DefaultValue}, 描述: {rule.Description})";
+                return $"{rule.Name} = {rule.Value} (类型: {rule.Type}, 默认: {rule.DefaultValue}, 描述: {rule.Description})";
             }
             return $"规则 {name} 不存在";
         }

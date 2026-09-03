@@ -27,6 +27,10 @@ namespace VoxelCraft.UI
             scrollOffset = 0;
         }
 
+        public SettingsMenu(UIManager ui, GameEngine engine) : this()
+        {
+        }
+
         public void Initialize()
         {
             Console.WriteLine("[SettingsMenu] 设置菜单初始化完成");

@@ -49,7 +49,7 @@ namespace VoxelCraft.Render
             blockShader.SetMatrix4("view", view);
             blockShader.SetMatrix4("projection", projection);
             blockShader.SetVector3("cameraPos", camera.Position);
-            blockShader.SetFloat("time", (float)GameEngine.Time);
+            blockShader.SetFloat("time", (float)GameEngine.Instance.Time);
 
             // 光照
             blockShader.SetVector3("lightDir", new Vector3(0.5f, 1.0f, 0.3f).Normalized());
@@ -100,7 +100,7 @@ namespace VoxelCraft.Render
         private List<Chunk> GetVisibleChunks(ChunkManager chunkManager)
         {
             List<Chunk> chunks = new List<Chunk>();
-            int renderDistance = GameEngine.RenderDistance;
+            int renderDistance = GameEngine.Instance.RenderDistance;
             int playerChunkX = (int)camera.Position.X >> 4;
             int playerChunkZ = (int)camera.Position.Z >> 4;
 

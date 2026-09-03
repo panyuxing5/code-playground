@@ -20,6 +20,11 @@ namespace VoxelCraft.World
         public int ChunksToLoad => chunksToLoad.Count;
         public int ChunksToMesh => chunksToMesh.Count;
 
+        // 扩展属性
+        public Dictionary<Vector2i, Chunk> LoadedChunks => chunks;
+        public Queue<Chunk> PendingMeshBuilds => chunksToMesh;
+        public int RenderedChunks => RenderedChunkCount;
+
         // 玩家位置
         private int playerChunkX = 0;
         private int playerChunkZ = 0;

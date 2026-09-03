@@ -373,8 +373,8 @@ namespace VoxelCraft.Entities
             Vector3 direction = (target - animal.Position).Normalized();
             direction.Y = 0;
 
-            animal.Velocity.X = direction.X * speed;
-            animal.Velocity.Z = direction.Z * speed;
+            animal.Velocity = new Vector3(direction.X * speed, animal.Velocity.Y, animal.Velocity.Z);
+            animal.Velocity = new Vector3(animal.Velocity.X, animal.Velocity.Y, direction.Z * speed);
 
             animal.Yaw = CalculateYaw(animal.Position, target);
 
@@ -383,7 +383,7 @@ namespace VoxelCraft.Entities
             {
                 if (animal.OnGround)
                 {
-                    animal.Velocity.Y = 0.4f;
+                    animal.Velocity = new Vector3(animal.Velocity.X, 0.4f, animal.Velocity.Z);
                 }
             }
         }
@@ -672,6 +672,20 @@ namespace VoxelCraft.Entities
             AdultAge = 20 * 60 * 20;
             CanBreed = false;
             IsTamed = false;
+        }
+
+        public override void Render()
+        {
+            // 动物渲染由EntityRenderer处理
+        }
+
+        // 扩展属性和方法
+        public new EntityType EntityType { get; set; }
+        public new bool OnGround { get; set; }
+
+        public Vector3 GetLookVector()
+        {
+            return Forward;
         }
     }
 

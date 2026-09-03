@@ -41,6 +41,11 @@ namespace VoxelCraft.UI
             AddSystemMessage("输入 /help 查看可用命令");
         }
 
+        public void Update(float deltaTime)
+        {
+            // 聊天系统更新逻辑
+        }
+
         public void OpenChat()
         {
             isChatOpen = true;

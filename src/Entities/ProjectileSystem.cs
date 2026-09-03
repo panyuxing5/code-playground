@@ -11,15 +11,15 @@ namespace VoxelCraft.Entities
     {
         private readonly WorldManager world;
         private readonly EntityManager entityManager;
-        private readonly List<Projectile> projectiles;
+        private readonly List<ProjectileInstance> projectiles;
 
-        // 物理参数
+        // 鐗╃悊鍙傛暟
         public float Gravity { get; set; } = 0.05f;
         public float AirResistance { get; set; } = 0.99f;
         public float WaterResistance { get; set; } = 0.8f;
         public float MaxProjectileAge { get; set; } = 600; // ticks
 
-        // 统计
+        // 缁熻
         public int ActiveProjectiles => projectiles.Count;
         public int ProjectilesFired { get; private set; }
         public int ProjectilesHit { get; private set; }
@@ -28,19 +28,19 @@ namespace VoxelCraft.Entities
         {
             this.world = world;
             this.entityManager = entityManager;
-            projectiles = new List<Projectile>();
+            projectiles = new List<ProjectileInstance>();
         }
 
         public void Initialize()
         {
-            Console.WriteLine("[ProjectileSystem] 抛射物系统初始化完成");
+            Console.WriteLine("[ProjectileSystem] 鎶涘皠鐗╃郴缁熷垵濮嬪寲瀹屾垚");
         }
 
         public void Update()
         {
             for (int i = projectiles.Count - 1; i >= 0; i--)
             {
-                Projectile projectile = projectiles[i];
+                ProjectileInstance projectile = projectiles[i];
                 UpdateProjectile(projectile);
 
                 if (projectile.IsDead || projectile.Age > MaxProjectileAge)
@@ -50,17 +50,17 @@ namespace VoxelCraft.Entities
             }
         }
 
-        private void UpdateProjectile(Projectile projectile)
+        private void UpdateProjectile(ProjectileInstance projectile)
         {
             projectile.Age++;
 
-            // 应用重力
+            // 搴旂敤閲嶅姏
             projectile.Velocity.Y -= Gravity;
 
-            // 应用空气阻力
+            // 搴旂敤绌烘皵闃诲姏
             projectile.Velocity *= AirResistance;
 
-            // 检查是否在水中
+            // 妫€鏌ユ槸鍚﹀湪姘翠腑
             ushort block = world.GetBlock(
                 (int)projectile.Position.X,
                 (int)projectile.Position.Y,
@@ -76,12 +76,11 @@ namespace VoxelCraft.Entities
                 projectile.InWater = false;
             }
 
-            // 移动
+            // 绉诲姩
             Vector3 oldPosition = projectile.Position;
             projectile.Position += projectile.Velocity;
 
-            // 碰撞检测
-            if (CheckBlockCollision(projectile))
+            // 纰版挒妫€娴?            if (CheckBlockCollision(projectile))
             {
                 OnProjectileHitBlock(projectile, oldPosition);
                 return;
@@ -93,7 +92,7 @@ namespace VoxelCraft.Entities
                 return;
             }
 
-            // 更新旋转
+            // 鏇存柊鏃嬭浆
             if (projectile.Velocity.Length > 0.01f)
             {
                 projectile.Yaw = (float)Math.Atan2(projectile.Velocity.X, projectile.Velocity.Z) * 180 / MathF.PI;
@@ -101,7 +100,7 @@ namespace VoxelCraft.Entities
             }
         }
 
-        private bool CheckBlockCollision(Projectile projectile)
+        private bool CheckBlockCollision(ProjectileInstance projectile)
         {
             int x = (int)Math.Floor(projectile.Position.X);
             int y = (int)Math.Floor(projectile.Position.Y);
@@ -115,7 +114,7 @@ namespace VoxelCraft.Entities
                    block != GameConstants.BLOCK_LAVA_FLOWING;
         }
 
-        private bool CheckEntityCollision(Projectile projectile)
+        private bool CheckEntityCollision(ProjectileInstance projectile)
         {
             foreach (Entity entity in entityManager.GetEntities())
             {
@@ -132,7 +131,7 @@ namespace VoxelCraft.Entities
             return false;
         }
 
-        private void OnProjectileHitBlock(Projectile projectile, Vector3 oldPosition)
+        private void OnProjectileHitBlock(ProjectileInstance projectile, Vector3 oldPosition)
         {
             projectile.IsDead = true;
             ProjectilesHit++;
@@ -141,17 +140,17 @@ namespace VoxelCraft.Entities
             switch (projectile.Type)
             {
                 case ProjectileType.Arrow:
-                    // 箭插在方块上
+                    // 绠彃鍦ㄦ柟鍧椾笂
                     world.CreateItemEntity(projectile.Position, 520, 1);
                     break;
 
                 case ProjectileType.Snowball:
-                    // 雪球破碎
+                    // 闆悆鐮寸
                     world.CreateParticleEffect(projectile.Position, ParticleType.Snowball, 8);
                     break;
 
                 case ProjectileType.Egg:
-                    // 鸡蛋破碎，有几率生成小鸡
+                    // 楦¤泲鐮寸锛屾湁鍑犵巼鐢熸垚灏忛浮
                     world.CreateParticleEffect(projectile.Position, ParticleType.Egg, 8);
                     if (Random.Shared.NextDouble() < 0.125)
                     {
@@ -160,12 +159,11 @@ namespace VoxelCraft.Entities
                     break;
 
                 case ProjectileType.EnderPearl:
-                    // 末影珍珠传送
-                    // 传送玩家到命中位置
+                    // 鏈奖鐝嶇彔浼犻€?                    // 浼犻€佺帺瀹跺埌鍛戒腑浣嶇疆
                     break;
 
                 case ProjectileType.Fireball:
-                    // 火球爆炸
+                    // 鐏悆鐖嗙偢
                     world.CreateExplosion(projectile.Position, 3);
                     break;
 
@@ -179,49 +177,46 @@ namespace VoxelCraft.Entities
                     break;
 
                 case ProjectileType.WitherSkull:
-                    // 凋灵骷髅头颅爆炸
+                    // 鍑嬬伒楠烽珔澶撮鐖嗙偢
                     world.CreateExplosion(projectile.Position, 2);
                     break;
 
                 case ProjectileType.ShulkerBullet:
-                    // 潜影贝导弹
-                    world.CreateParticleEffect(projectile.Position, ParticleType.ShulkerBullet, 6);
+                    // 娼滃奖璐濆寮?                    world.CreateParticleEffect(projectile.Position, ParticleType.ShulkerBullet, 6);
                     break;
 
                 case ProjectileType.DragonFireball:
-                    // 龙息
+                    // 榫欐伅
                     world.CreateParticleEffect(projectile.Position, ParticleType.DragonBreath, 20);
                     break;
 
                 case ProjectileType.Trident:
-                    // 三叉戟掉落
-                    world.CreateItemEntity(projectile.Position, 524, 1);
+                    // 涓夊弶鎴熸帀钀?                    world.CreateItemEntity(projectile.Position, 524, 1);
                     break;
 
                 case ProjectileType.ExperienceBottle:
-                    // 附魔之瓶生成经验球
-                    world.CreateExperienceOrbs(projectile.Position, Random.Shared.Next(3, 12));
+                    // 闄勯瓟涔嬬摱鐢熸垚缁忛獙鐞?                    world.CreateExperienceOrbs(projectile.Position, Random.Shared.Next(3, 12));
                     break;
 
                 case ProjectileType.Potion:
-                    // 药水效果
+                    // 鑽按鏁堟灉
                     world.CreateParticleEffect(projectile.Position, ParticleType.Potion, 15);
                     break;
 
                 case ProjectileType.FishingHook:
                     // 钓鱼钩
                     break;
-            }
+        }
         }
 
-        private void OnProjectileHitEntity(Projectile projectile)
+        private void OnProjectileHitEntity(ProjectileInstance projectile)
         {
             projectile.IsDead = true;
             ProjectilesHit++;
 
             if (projectile.HitEntity == null) return;
 
-            // 根据抛射物类型造成伤害
+            // 鏍规嵁鎶涘皠鐗╃被鍨嬮€犳垚浼ゅ
             switch (projectile.Type)
             {
                 case ProjectileType.Arrow:
@@ -270,7 +265,7 @@ namespace VoxelCraft.Entities
                     break;
 
                 case ProjectileType.Potion:
-                    // 应用药水效果
+                    // 搴旂敤鑽按鏁堟灉
                     world.CreateParticleEffect(projectile.Position, ParticleType.Potion, 15);
                     break;
             }
@@ -278,7 +273,7 @@ namespace VoxelCraft.Entities
 
         public void FireProjectile(ProjectileType type, Vector3 position, Vector3 velocity, int ownerId, float damage = 2)
         {
-            Projectile projectile = new Projectile
+            ProjectileInstance projectile = new ProjectileInstance
             {
                 Type = type,
                 Position = position,
@@ -365,9 +360,9 @@ namespace VoxelCraft.Entities
             FireProjectile(ProjectileType.Potion, position, velocity, ownerId, 0);
         }
 
-        public List<Projectile> GetProjectiles()
+        public List<ProjectileInstance> GetProjectiles()
         {
-            return new List<Projectile>(projectiles);
+            return new List<ProjectileInstance>(projectiles);
         }
 
         public void Clear()
@@ -376,7 +371,7 @@ namespace VoxelCraft.Entities
         }
     }
 
-    public class Projectile
+    public class ProjectileInstance
     {
         public ProjectileType Type;
         public Vector3 Position;

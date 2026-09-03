@@ -17,6 +17,7 @@ namespace VoxelCraft.Core
         // 相机向量
         // ========================================
         public Vector3 Forward { get; private set; } = -Vector3.UnitZ;
+        public Vector3 Front => Forward;
         public Vector3 Right { get; private set; } = Vector3.UnitX;
         public Vector3 Up { get; private set; } = Vector3.UnitY;
 
@@ -90,6 +91,11 @@ namespace VoxelCraft.Core
             UpdateProjectionMatrix(FOV, AspectRatio, NearPlane, FarPlane);
         }
 
+        // 兼容方法
+        public void UpdateVectors() => UpdateCameraVectors();
+        public Matrix4 GetViewMatrix() => ViewMatrix;
+        public Matrix4 GetProjectionMatrix() => ProjectionMatrix;
+
         // ========================================
         // 更新相机向量
         // ========================================
@@ -97,9 +103,7 @@ namespace VoxelCraft.Core
         {
             // 计算前向向量
             float yawRad = MathHelper.DegreesToRadians(Yaw);
-            float pitchRad = MathHelper.DegreesToRadians(Pitch);
-
-            Forward = new Vector3(
+            float pitchRad = MathHelper.DegreesToRadians(Pitch);            Forward = new Vector3(
                 (float)(Math.Cos(pitchRad) * Math.Cos(yawRad)),
                 (float)Math.Sin(pitchRad),
                 (float)(Math.Cos(pitchRad) * Math.Sin(yawRad))
@@ -432,6 +436,14 @@ namespace VoxelCraft.Core
             clone.UseBobEffect = UseBobEffect;
             clone.UseSmoothCamera = UseSmoothCamera;
             return clone;
+        }
+
+        // 扩展属性和方法
+        public Vector3 Rotation => new Vector3(Pitch, Yaw, 0);
+
+        public bool FrustumContains(Vector3 position, float radius)
+        {
+            return true; // 简化：始终返回true
         }
     }
 

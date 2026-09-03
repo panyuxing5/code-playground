@@ -192,7 +192,7 @@ namespace VoxelCraft.Core
         {
             try
             {
-                FileInfo fileInfo = new FileInfo(fileInfo);
+                FileInfo fileInfo = new FileInfo(filePath);
                 string fileName = Path.GetFileNameWithoutExtension(filePath);
 
                 // 检查皮肤尺寸

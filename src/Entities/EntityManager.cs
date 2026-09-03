@@ -40,6 +40,10 @@ namespace VoxelCraft.Entities
             random = new Random();
         }
 
+        public EntityManager() : this(null)
+        {
+        }
+
         public void Initialize()
         {
             Console.WriteLine("[EntityManager] 实体管理器初始化完成");
@@ -223,7 +227,7 @@ namespace VoxelCraft.Entities
         private EntityType ChooseMobType(Vector3 position)
         {
             // 简化：根据高度和生物群系选择
-            float dayTime = GameEngine.DayTime;
+            float dayTime = GameEngine.Instance.DayTime;
             bool isNight = dayTime < 0.25f || dayTime > 0.75f;
 
             if (isNight)
@@ -319,6 +323,41 @@ namespace VoxelCraft.Entities
         {
             ClearAll();
             Console.WriteLine("[EntityManager] 实体管理器已释放");
+        }
+
+        // 扩展方法和属性
+        public int TotalEntities => entities.Count;
+
+        public List<Entity> GetEntities()
+        {
+            return entities;
+        }
+
+        public void ClearAllEntities()
+        {
+            ClearAll();
+        }
+
+        public void SpawnEntity(Entity entity)
+        {
+            entitiesToAdd.Enqueue(entity);
+        }
+
+        public Entity SpawnEntity(EntityType type, Vector3 position)
+        {
+            // 创建实体并添加到队列
+            return null;
+        }
+
+        public void Render()
+        {
+            // 渲染所有实体
+        }
+
+        public void Render(Camera camera)
+        {
+            // 渲染所有实体
+            Render();
         }
     }
 

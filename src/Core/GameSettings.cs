@@ -28,6 +28,22 @@ namespace VoxelCraft.Core
         public int BiomeBlendRadius { get; set; } = 2;
         public bool EntityShadows { get; set; } = true;
 
+        // 扩展设置属性
+        public bool AdvancedTooltips { get; set; } = false;
+        public bool AutoPause { get; set; } = true;
+        public bool AutoSave { get; set; } = true;
+        public int AutoSaveInterval { get; set; } = 6000;
+        public bool PauseOnLostFocus { get; set; } = true;
+        public bool ReducedChatBackground { get; set; } = false;
+        public bool ShowBiome { get; set; } = true;
+        public bool ShowCape { get; set; } = true;
+        public bool ShowCoordinates { get; set; } = false;
+        public bool ShowSkin { get; set; } = true;
+        public bool ShowTime { get; set; } = false;
+        public bool ShowTutorialHints { get; set; } = true;
+        public bool SplitControls { get; set; } = false;
+        public string WorldSeed { get; set; } = "";
+
         // 音频设置
         public float MasterVolume { get; set; } = 1.0f;
         public float MusicVolume { get; set; } = 1.0f;

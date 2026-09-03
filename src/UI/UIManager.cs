@@ -26,7 +26,7 @@ namespace VoxelCraft.UI
         private readonly PauseMenu pauseMenu;
         private readonly MainMenu mainMenu;
         private readonly SettingsMenu settingsMenu;
-        private readonly ChatUI chat;
+        private readonly ChatSystem chat;
 
         // 字体渲染
         private FontRenderer fontRenderer;
@@ -49,7 +49,16 @@ namespace VoxelCraft.UI
             pauseMenu = new PauseMenu(this, engine);
             mainMenu = new MainMenu(this, engine);
             settingsMenu = new SettingsMenu(this, engine);
-            chat = new ChatUI(this);
+            chat = new ChatSystem();
+        }
+
+        public UIManager() : this(null, null, null)
+        {
+        }
+
+        public void Initialize()
+        {
+            Initialize(1280, 720);
         }
 
         public void Initialize(int width, int height)
@@ -156,17 +165,17 @@ namespace VoxelCraft.UI
             // 物品栏
             if (IsInventoryOpen)
             {
-                inventoryScreen.Render();
+                inventoryScreen.Render(this, null);
             }
 
             // 暂停菜单
             if (IsPauseMenuOpen)
             {
-                pauseMenu.Render();
+                pauseMenu.Render(this);
             }
 
             // 聊天
-            chat.Render();
+            chat.Render(this);
 
             // 十字准星
             if (!IsInventoryOpen && !IsPauseMenuOpen)
@@ -185,7 +194,7 @@ namespace VoxelCraft.UI
             // 实际应该用OpenGL渲染
         }
 
-        private void RenderDebugInfo()
+        public void RenderDebugInfo()
         {
             int x = 5;
             int y = 5;
@@ -203,7 +212,7 @@ namespace VoxelCraft.UI
                 $"生命: {player.Health:F0}/{player.MaxHealth}",
                 $"饥饿: {player.Hunger:F0}/{player.MaxHunger}",
                 $"区块: {(int)player.Position.X >> 4}, {(int)player.Position.Z >> 4}",
-                $"渲染距离: {GameEngine.RenderDistance}",
+                $"渲染距离: {GameEngine.Instance.RenderDistance}",
                 $"已加载区块: {engine.World?.LoadedChunkCount ?? 0}",
                 $"内存: {GC.GetTotalMemory(false) / 1024 / 1024:F0} MB"
             };
@@ -238,13 +247,88 @@ namespace VoxelCraft.UI
 
         public void AddChatMessage(string message)
         {
-            chat.AddMessage(message);
+            chat.AddMessage("System", message);
         }
 
         public void Dispose()
         {
             fontRenderer?.Dispose();
             Console.WriteLine("[UIManager] UI管理器已释放");
+        }
+
+        // ========================================
+        // 兼容方法
+        // ========================================
+        public void DrawPanel(int x, int y, int width, int height, Vector4 color)
+        {
+            // 绘制面板背景
+        }
+
+        public void DrawPanel(int x, int y, int width, int height, Color4 color)
+        {
+        }
+
+        public void DrawPanel(float x, float y, float width, float height, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, Vector4 color, float scale = 1.0f)
+        {
+            fontRenderer?.DrawText(text, x, y, color, scale);
+        }
+
+        public void DrawText(string text, int x, int y, int fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, float y, int fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, float x, int y, int fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, float x, float y, int fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, float x, float y, Color4 color)
+        {
+        }
+
+        public Vector2 MeasureText(string text, float scale = 1.0f)
+        {
+            return fontRenderer?.MeasureText(text, scale) ?? Vector2.Zero;
+        }
+
+        public int MeasureText(string text, int fontSize)
+        {
+            return text.Length * fontSize;
+        }
+
+        public void DrawItemIcon(int itemId, int x, int y, int size = 32)
+        {
+            // 绘制物品图标
+        }
+
+        public void RenderLoadingScreen(string message, float progress)
+        {
+            // 渲染加载界面
+        }
+
+        public void RenderMainMenu()
+        {
+            mainMenu?.Render(this, null);
+        }
+
+        public void ShowMainMenu(bool show)
+        {
+            // 显示或隐藏主菜单
         }
     }
 
@@ -415,485 +499,6 @@ namespace VoxelCraft.UI
     }
 
     // ========================================
-    // 物品栏界面
-    // ========================================
-    public class InventoryScreen
-    {
-        private readonly UIManager uiManager;
-        private readonly PlayerController player;
-
-        private const int SlotSize = 36;
-        private const int SlotGap = 4;
-        private const int InventoryWidth = 9;
-        private const int InventoryHeight = 3;
-
-        private int windowX;
-        private int windowY;
-        private int windowWidth;
-        private int windowHeight;
-
-        public InventoryScreen(UIManager uiManager, PlayerController player)
-        {
-            this.uiManager = uiManager;
-            this.player = player;
-        }
-
-        public void Initialize()
-        {
-            windowWidth = InventoryWidth * (SlotSize + SlotGap) + SlotGap * 2;
-            windowHeight = (InventoryHeight + 1) * (SlotSize + SlotGap) + SlotGap * 2 + 50;
-        }
-
-        public void Update(float deltaTime)
-        {
-            // 计算窗口位置
-            windowX = (uiManager.ScreenWidth - windowWidth) / 2;
-            windowY = (uiManager.ScreenHeight - windowHeight) / 2;
-
-            // 鼠标点击处理
-            // if (input.IsMouseButtonPressed(MouseButton.Left))
-            // {
-            //     HandleClick(input.MousePosition);
-            // }
-        }
-
-        public void Render()
-        {
-            // 半透明背景
-            RenderBackground();
-
-            // 标题
-            uiManager.GetFontRenderer().DrawText(
-                "物品栏",
-                windowX + 10,
-                windowY + 10,
-                Vector3.One
-            );
-
-            // 玩家物品栏
-            RenderPlayerInventory();
-
-            // 护甲槽
-            RenderArmorSlots();
-
-            // 副手槽
-            RenderOffhandSlot();
-
-            // 合成格子
-            RenderCraftingGrid();
-        }
-
-        private void RenderBackground()
-        {
-            // 渲染半透明灰色背景
-        }
-
-        private void RenderPlayerInventory()
-        {
-            int startX = windowX + SlotGap;
-            int startY = windowY + 50;
-
-            for (int row = 0; row < InventoryHeight; row++)
-            {
-                for (int col = 0; col < InventoryWidth; col++)
-                {
-                    int x = startX + col * (SlotSize + SlotGap);
-                    int y = startY + row * (SlotSize + SlotGap);
-                    int slotIndex = row * InventoryWidth + col;
-
-                    RenderSlot(x, y, SlotSize);
-                    // 渲染物品
-                }
-            }
-
-            // 快捷栏
-            startY += (InventoryHeight + 1) * (SlotSize + SlotGap);
-            for (int col = 0; col < InventoryWidth; col++)
-            {
-                int x = startX + col * (SlotSize + SlotGap);
-                int slotIndex = InventoryHeight * InventoryWidth + col;
-
-                RenderSlot(x, startY, SlotSize);
-                // 渲染物品
-            }
-        }
-
-        private void RenderArmorSlots()
-        {
-            // 渲染4个护甲槽
-        }
-
-        private void RenderOffhandSlot()
-        {
-            // 渲染副手槽
-        }
-
-        private void RenderCraftingGrid()
-        {
-            // 渲染2x2合成格子和结果槽
-        }
-
-        private void RenderSlot(int x, int y, int size)
-        {
-            // 渲染槽位
-        }
-    }
-
-    // ========================================
-    // 暂停菜单
-    // ========================================
-    public class PauseMenu
-    {
-        private readonly UIManager uiManager;
-        private readonly GameEngine engine;
-
-        private List<Button> buttons;
-        private int selectedButtonIndex;
-
-        public PauseMenu(UIManager uiManager, GameEngine engine)
-        {
-            this.uiManager = uiManager;
-            this.engine = engine;
-            buttons = new List<Button>();
-        }
-
-        public void Initialize()
-        {
-            buttons.Clear();
-
-            buttons.Add(new Button
-            {
-                Text = "返回游戏",
-                Action = () => { uiManager.IsPauseMenuOpen = false; engine.IsCursorVisible = false; }
-            });
-
-            buttons.Add(new Button
-            {
-                Text = "设置",
-                Action = () => { /* 打开设置 */ }
-            });
-
-            buttons.Add(new Button
-            {
-                Text = "对局域网开放",
-                Action = () => { /* 开放局域网 */ }
-            });
-
-            buttons.Add(new Button
-            {
-                Text = "保存并退出",
-                Action = () => { engine.SaveAndExit(); }
-            });
-        }
-
-        public void Update(float deltaTime)
-        {
-            // 键盘导航
-            // if (input.IsKeyPressed(Keys.Up)) selectedButtonIndex = (selectedButtonIndex - 1 + buttons.Count) % buttons.Count;
-            // if (input.IsKeyPressed(Keys.Down)) selectedButtonIndex = (selectedButtonIndex + 1) % buttons.Count;
-            // if (input.IsKeyPressed(Keys.Enter)) buttons[selectedButtonIndex].Action.Invoke();
-        }
-
-        public void Render()
-        {
-            // 半透明背景
-            // 标题
-            uiManager.GetFontRenderer().DrawTextCentered(
-                "游戏暂停",
-                uiManager.ScreenWidth / 2,
-                uiManager.ScreenHeight / 4,
-                Vector3.One,
-                2.0f
-            );
-
-            // 按钮
-            int buttonWidth = 200;
-            int buttonHeight = 40;
-            int startY = uiManager.ScreenHeight / 3;
-
-            for (int i = 0; i < buttons.Count; i++)
-            {
-                int x = (uiManager.ScreenWidth - buttonWidth) / 2;
-                int y = startY + i * (buttonHeight + 10);
-
-                RenderButton(x, y, buttonWidth, buttonHeight, buttons[i].Text, i == selectedButtonIndex);
-            }
-        }
-
-        private void RenderButton(int x, int y, int width, int height, string text, bool selected)
-        {
-            // 渲染按钮背景和文字
-        }
-    }
-
-    // ========================================
-    // 主菜单
-    // ========================================
-    public class MainMenu
-    {
-        private readonly UIManager uiManager;
-        private readonly GameEngine engine;
-
-        private List<Button> buttons;
-
-        public MainMenu(UIManager uiManager, GameEngine engine)
-        {
-            this.uiManager = uiManager;
-            this.engine = engine;
-            buttons = new List<Button>();
-        }
-
-        public void Initialize()
-        {
-            buttons.Clear();
-
-            buttons.Add(new Button { Text = "单人游戏", Action = () => { } });
-            buttons.Add(new Button { Text = "多人游戏", Action = () => { } });
-            buttons.Add(new Button { Text = "设置", Action = () => { } });
-            buttons.Add(new Button { Text = "退出游戏", Action = () => { engine.Exit(); } });
-        }
-
-        public void Update(float deltaTime)
-        {
-        }
-
-        public void Render()
-        {
-            // 渲染主菜单背景
-            // 标题
-            uiManager.GetFontRenderer().DrawTextCentered(
-                "VoxelCraft",
-                uiManager.ScreenWidth / 2,
-                uiManager.ScreenHeight / 4,
-                new Vector3(0.3f, 0.8f, 0.3f),
-                3.0f
-            );
-
-            // 按钮
-            int buttonWidth = 250;
-            int buttonHeight = 40;
-            int startY = uiManager.ScreenHeight / 3;
-
-            for (int i = 0; i < buttons.Count; i++)
-            {
-                int x = (uiManager.ScreenWidth - buttonWidth) / 2;
-                int y = startY + i * (buttonHeight + 10);
-                RenderButton(x, y, buttonWidth, buttonHeight, buttons[i].Text);
-            }
-        }
-
-        private void RenderButton(int x, int y, int width, int height, string text)
-        {
-        }
-    }
-
-    // ========================================
-    // 设置菜单
-    // ========================================
-    public class SettingsMenu
-    {
-        private readonly UIManager uiManager;
-        private readonly GameEngine engine;
-
-        private List<SettingOption> options;
-        private int selectedIndex;
-
-        public SettingsMenu(UIManager uiManager, GameEngine engine)
-        {
-            this.uiManager = uiManager;
-            this.engine = engine;
-            options = new List<SettingOption>();
-        }
-
-        public void Initialize()
-        {
-            options.Clear();
-
-            options.Add(new SettingOption
-            {
-                Name = "渲染距离",
-                Type = SettingType.Slider,
-                MinValue = 2,
-                MaxValue = 16,
-                CurrentValue = GameEngine.RenderDistance,
-                OnValueChanged = (v) => { GameEngine.RenderDistance = (int)v; }
-            });
-
-            options.Add(new SettingOption
-            {
-                Name = "视野",
-                Type = SettingType.Slider,
-                MinValue = 30,
-                MaxValue = 110,
-                CurrentValue = 70,
-                OnValueChanged = (v) => { }
-            });
-
-            options.Add(new SettingOption
-            {
-                Name = "音乐音量",
-                Type = SettingType.Slider,
-                MinValue = 0,
-                MaxValue = 100,
-                CurrentValue = 100,
-                OnValueChanged = (v) => { }
-            });
-
-            options.Add(new SettingOption
-            {
-                Name = "音效音量",
-                Type = SettingType.Slider,
-                MinValue = 0,
-                MaxValue = 100,
-                CurrentValue = 100,
-                OnValueChanged = (v) => { }
-            });
-
-            options.Add(new SettingOption
-            {
-                Name = "垂直同步",
-                Type = SettingType.Toggle,
-                CurrentValue = 1,
-                OnValueChanged = (v) => { }
-            });
-
-            options.Add(new SettingOption
-            {
-                Name = "全屏",
-                Type = SettingType.Toggle,
-                CurrentValue = 0,
-                OnValueChanged = (v) => { }
-            });
-        }
-
-        public void Update(float deltaTime)
-        {
-        }
-
-        public void Render()
-        {
-        }
-    }
-
-    // ========================================
-    // 聊天UI
-    // ========================================
-    public class ChatUI
-    {
-        private readonly UIManager uiManager;
-        private List<ChatMessage> messages;
-        private string inputText;
-        private int maxMessages = 100;
-        private int visibleMessages = 10;
-
-        public ChatUI(UIManager uiManager)
-        {
-            this.uiManager = uiManager;
-            messages = new List<ChatMessage>();
-            inputText = "";
-        }
-
-        public void Initialize()
-        {
-        }
-
-        public void Update(float deltaTime)
-        {
-            // 消息淡出
-            for (int i = messages.Count - 1; i >= 0; i--)
-            {
-                messages[i].Age += deltaTime;
-                if (messages[i].Age > 10.0f)
-                {
-                    messages.RemoveAt(i);
-                }
-            }
-        }
-
-        public void Render()
-        {
-            int x = 5;
-            int y = uiManager.ScreenHeight - 100;
-            int lineHeight = 12;
-
-            // 渲染历史消息
-            int start = Math.Max(0, messages.Count - visibleMessages);
-            for (int i = start; i < messages.Count; i++)
-            {
-                float alpha = Math.Clamp(1.0f - messages[i].Age / 10.0f, 0, 1);
-                uiManager.GetFontRenderer().DrawText(
-                    messages[i].Text,
-                    x,
-                    y - (messages.Count - 1 - i) * lineHeight,
-                    new Vector3(1, 1, 1) * alpha
-                );
-            }
-
-            // 输入框
-            if (uiManager.IsChatOpen)
-            {
-                uiManager.GetFontRenderer().DrawText(
-                    "> " + inputText + "_",
-                    x,
-                    y + lineHeight,
-                    Vector3.One
-                );
-            }
-        }
-
-        public void AddMessage(string text)
-        {
-            messages.Add(new ChatMessage { Text = text, Age = 0 });
-            if (messages.Count > maxMessages)
-            {
-                messages.RemoveAt(0);
-            }
-        }
-
-        public void SendMessage()
-        {
-            if (!string.IsNullOrWhiteSpace(inputText))
-            {
-                AddMessage("<玩家> " + inputText);
-                inputText = "";
-            }
-        }
-    }
-
-    // ========================================
-    // 辅助类
-    // ========================================
-    public class Button
-    {
-        public string Text;
-        public Action Action;
-        public bool Enabled = true;
-    }
-
-    public class SettingOption
-    {
-        public string Name;
-        public SettingType Type;
-        public float MinValue;
-        public float MaxValue;
-        public float CurrentValue;
-        public Action<float> OnValueChanged;
-    }
-
-    public enum SettingType
-    {
-        Slider,
-        Toggle,
-        Select
-    }
-
-    public class ChatMessage
-    {
-        public string Text;
-        public float Age;
-    }
-
-    // ========================================
     // 字体渲染器（简化版）
     // ========================================
     public class FontRenderer : IDisposable
@@ -913,6 +518,62 @@ namespace VoxelCraft.UI
             // 简化：实际应该用OpenGL渲染
         }
 
+        public void DrawText(string text, int x, int y, int fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, float y, int fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, float x, int y, int fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, float x, float y, int fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, float x, float y, float fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, float fontSize, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, int fontSize, Vector4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, Vector4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, Color4 color, float scale)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, Vector4 color, float scale)
+        {
+        }
+
+        public void DrawText(string text, int x, int y, float r, float g, float b, float a)
+        {
+        }
+
+        public void DrawText(string text, float x, float y, Color4 color)
+        {
+        }
+
+        public void DrawText(string text, float x, float y, Vector4 color)
+        {
+        }
+
         public void DrawTextCentered(string text, int centerX, int y, Vector3 color, float scale = 1.0f)
         {
             int textWidth = GetTextWidth(text);
@@ -929,7 +590,13 @@ namespace VoxelCraft.UI
             return 12;
         }
 
-        public void Dispose()
+        
+
+        public Vector2 MeasureText(string text, float scale = 1.0f)
+        {
+            return new Vector2(text.Length * 8 * scale, 16 * scale);
+        }
+public void Dispose()
         {
         }
     }

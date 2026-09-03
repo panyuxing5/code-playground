@@ -165,7 +165,7 @@ namespace VoxelCraft.Entities
                     }
 
                     // 农民收获作物
-                    if (villager.Profession == VillagerProfession.Farmer)
+                    if (villager.Profession == VillagerProfession.Farmer.Name)
                     {
                         TryHarvestCrops(villager);
                     }
@@ -250,13 +250,13 @@ namespace VoxelCraft.Entities
                 villager.HasTarget = true;
             }
 
-            if (villager.HasTarget)
+            if (villager.HasTarget && villager.TargetPosition.HasValue)
             {
-                float distance = Vector3.Distance(villager.Position, villager.TargetPosition);
+                float distance = Vector3.Distance(villager.Position, villager.TargetPosition.Value);
 
                 if (distance > 1.0f)
                 {
-                    MoveTowards(villager, villager.TargetPosition);
+                    MoveTowards(villager, villager.TargetPosition.Value);
                 }
                 else
                 {
@@ -347,8 +347,8 @@ namespace VoxelCraft.Entities
             Vector3 direction = (target - villager.Position).Normalized();
             direction.Y = 0;
 
-            villager.Velocity.X = direction.X * speed;
-            villager.Velocity.Z = direction.Z * speed;
+            villager.Velocity = new Vector3(direction.X * speed, villager.Velocity.Y, villager.Velocity.Z);
+            villager.Velocity = new Vector3(villager.Velocity.X, villager.Velocity.Y, direction.Z * speed);
 
             villager.Yaw = CalculateYaw(villager.Position, target);
 
@@ -357,7 +357,7 @@ namespace VoxelCraft.Entities
             {
                 if (villager.OnGround)
                 {
-                    villager.Velocity.Y = 0.4f;
+                    villager.Velocity = new Vector3(villager.Velocity.X, 0.4f, villager.Velocity.Z);
                 }
             }
         }
@@ -417,47 +417,47 @@ namespace VoxelCraft.Entities
             }
         }
 
-        private bool IsWorkstation(ushort blockId, VillagerProfession profession)
+        private bool IsWorkstation(ushort blockId, string profession)
         {
             switch (profession)
             {
-                case VillagerProfession.Farmer:
+                case "Farmer":
                     return blockId == GameConstants.BLOCK_COMPOSTER;
 
-                case VillagerProfession.Fisherman:
+                case "Fisherman":
                     return blockId == GameConstants.BLOCK_BARREL;
 
-                case VillagerProfession.Fletcher:
+                case "Fletcher":
                     return blockId == GameConstants.BLOCK_FLETCHING_TABLE;
 
-                case VillagerProfession.Shepherd:
+                case "Shepherd":
                     return blockId == GameConstants.BLOCK_LOOM;
 
-                case VillagerProfession.Librarian:
+                case "Librarian":
                     return blockId == GameConstants.BLOCK_LECTERN;
 
-                case VillagerProfession.Cartographer:
+                case "Cartographer":
                     return blockId == GameConstants.BLOCK_CARTOGRAPHY_TABLE;
 
-                case VillagerProfession.Cleric:
+                case "Cleric":
                     return blockId == GameConstants.BLOCK_BREWING_STAND;
 
-                case VillagerProfession.Armorer:
+                case "Armorer":
                     return blockId == GameConstants.BLOCK_BLAST_FURNACE;
 
-                case VillagerProfession.WeaponSmith:
+                case "WeaponSmith":
                     return blockId == GameConstants.BLOCK_GRINDSTONE;
 
-                case VillagerProfession.ToolSmith:
+                case "ToolSmith":
                     return blockId == GameConstants.BLOCK_SMITHING_TABLE;
 
-                case VillagerProfession.Butcher:
+                case "Butcher":
                     return blockId == GameConstants.BLOCK_SMOKER;
 
-                case VillagerProfession.Leatherworker:
+                case "Leatherworker":
                     return blockId == GameConstants.BLOCK_CAULDRON;
 
-                case VillagerProfession.Mason:
+                case "Mason":
                     return blockId == GameConstants.BLOCK_STONECUTTER;
 
                 default:
@@ -582,7 +582,7 @@ namespace VoxelCraft.Entities
             {
                 baby.IsBaby = true;
                 baby.Age = 0;
-                baby.Profession = VillagerProfession.None;
+                baby.Profession = VillagerProfession.None.Name;
 
                 // 重置繁殖冷却
                 villager1.BreedCooldown = 20 * 60 * 5; // 5分钟
@@ -595,13 +595,13 @@ namespace VoxelCraft.Entities
         public void CompleteTrade(Villager villager)
         {
             TradesCompleted++;
-            villager.TradeUses++;
+            villager.TotalTradeUses++;
 
             // 升级村民等级
             int[] levelThresholds = { 0, 10, 50, 150, 400 };
             for (int i = levelThresholds.Length - 1; i >= 0; i--)
             {
-                if (villager.TradeUses >= levelThresholds[i])
+                if (villager.TotalTradeUses >= levelThresholds[i])
                 {
                     villager.Level = i + 1;
                     break;

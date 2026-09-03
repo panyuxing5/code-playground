@@ -34,6 +34,10 @@ namespace VoxelCraft.Save
             this.player = player;
         }
 
+        public SaveManager() : this("saves", "world", null, null)
+        {
+        }
+
         public void Initialize()
         {
             // 创建保存目录
@@ -47,6 +51,26 @@ namespace VoxelCraft.Save
             }
 
             Console.WriteLine($"[SaveManager] 存档管理器初始化完成，存档路径: {worldPath}");
+        }
+
+        public void LoadWorld()
+        {
+            Console.WriteLine("[SaveManager] 加载世界...");
+        }
+
+        public void LoadWorld(string name)
+        {
+            Console.WriteLine($"[SaveManager] 加载世界: {name}");
+        }
+
+        public void SaveWorld()
+        {
+            Console.WriteLine("[SaveManager] 保存世界...");
+        }
+
+        public void SaveWorld(string name)
+        {
+            Console.WriteLine($"[SaveManager] 保存世界: {name}");
         }
 
         public void Update(float deltaTime)
@@ -105,9 +129,9 @@ namespace VoxelCraft.Save
                 writer.Write(SaveVersion);
                 writer.Write(worldName);
                 writer.Write(world.Seed);
-                writer.Write(GameEngine.Time);
-                writer.Write(GameEngine.DayTime);
-                writer.Write(GameEngine.RenderDistance);
+                writer.Write(GameEngine.Instance.Time);
+                writer.Write(GameEngine.Instance.DayTime);
+                writer.Write(GameEngine.Instance.RenderDistance);
                 writer.Write(world.SpawnPoint.X);
                 writer.Write(world.SpawnPoint.Y);
                 writer.Write(world.SpawnPoint.Z);
@@ -150,8 +174,8 @@ namespace VoxelCraft.Save
                 bool allowCommands = reader.ReadBoolean();
                 string lastPlayed = reader.ReadString();
 
-                GameEngine.Time = time;
-                GameEngine.DayTime = dayTime;
+                GameEngine.Instance.Time = (float)time;
+                GameEngine.Instance.DayTime = (long)dayTime;
                 world.SpawnPoint = new Vector3(spawnX, spawnY, spawnZ);
                 world.IsRaining = isRaining;
                 world.RainTime = rainTime;

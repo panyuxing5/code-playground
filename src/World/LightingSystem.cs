@@ -141,7 +141,7 @@ namespace VoxelCraft.World
                 // 添加光照
                 if (update.LightLevel > currentLight)
                 {
-                    world.SetBlockLight(update.X, update.Y, update.Z, update.LightLevel);
+                    world.SetBlockLight(update.X, update.Y, update.Z, (byte)update.LightLevel);
 
                     // 传播到邻居
                     int newLightLevel = update.LightLevel - GetLightAttenuation(update.X, update.Y, update.Z);
@@ -176,7 +176,7 @@ namespace VoxelCraft.World
             {
                 if (update.LightLevel > currentLight)
                 {
-                    world.SetSkyLight(update.X, update.Y, update.Z, update.LightLevel);
+                    world.SetSkyLight(update.X, update.Y, update.Z, (byte)update.LightLevel);
 
                     // 天空光向下传播不衰减
                     if (update.Y > 0)
@@ -532,7 +532,7 @@ namespace VoxelCraft.World
                     {
                         if (CanSeeSky(x, y, z))
                         {
-                            world.SetSkyLight(x, y, z, MaxLightLevel);
+                            world.SetSkyLight(x, y, z, (byte)MaxLightLevel);
                         }
                         else
                         {
