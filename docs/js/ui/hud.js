@@ -325,8 +325,8 @@ const HUD = {
 
   // 金币
   renderGold(ctx, player) {
-    const x = game.canvas.width - 180;
-    const y = game.canvas.height - 40;
+    const x = Game.canvas.width - 180;
+    const y = Game.canvas.height - 40;
 
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
     ctx.fillRect(x, y, 160, 30);
