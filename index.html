@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>姘告亽鍦扮墷 - Eternal Dungeon</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #gameContainer {
+    position: relative;
+    box-shadow: 0 0 50px rgba(155, 89, 182, 0.3);
+  }
+  #gameCanvas {
+    display: block;
+    border: 2px solid #2c2c54;
+    cursor: crosshair;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+  #loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #f1c40f;
+    font-size: 24px;
+  }
+  /* 绉诲姩绔櫄鎷熸憞鏉?*/
+  #mobileControls {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    pointer-events: none;
+  }
+  #joystick {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    pointer-events: auto;
+  }
+  #joystickKnob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(241, 196, 15, 0.7);
+    border-radius: 50%;
+    border: 2px solid #f1c40f;
+  }
+  #actionButtons {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: auto;
+  }
+  .action-btn {
+    width: 60px;
+    height: 60px;
+    background: rgba(155, 89, 182, 0.6);
+    border: 2px solid #9b59b6;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .action-btn:active {
+    background: rgba(155, 89, 182, 0.9);
+  }
+  /* 绉诲姩绔樉绀烘帶鍒?*/
+  @media (max-width: 768px) {
+    #mobileControls { display: block; }
+    #gameCanvas { border: none; }
+  }
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <canvas id="gameCanvas" width="1280" height="800"></canvas>
+  <div id="loading">鍔犺浇涓?..</div>
+</div>
+
+<!-- 绉诲姩绔帶鍒?-->
+<div id="mobileControls">
+  <div id="joystick">
+    <div id="joystickKnob"></div>
+  </div>
+  <div id="actionButtons">
+    <div class="action-btn" id="btnAttack">鈿旓笍</div>
+    <div class="action-btn" id="btnSkill1">1</div>
+    <div class="action-btn" id="btnSkill2">2</div>
+    <div class="action-btn" id="btnDash">馃挩</div>
+  </div>
+</div>
+
+<!-- 鏍稿績宸ュ叿 -->
+<script src="js/core/utils.js?v=20260905d"></script>
+<script src="js/core/input.js?v=20260905d"></script>
+<script src="js/core/renderer.js?v=20260905d"></script>
+
+<!-- 鏁版嵁閰嶇疆 -->
+<script src="js/data/classes.js?v=20260905d"></script>
+<script src="js/data/monsters.js?v=20260905d"></script>
+<script src="js/data/items.js?v=20260905d"></script>
+<script src="js/data/skills.js?v=20260905d"></script>
+<script src="js/data/quests.js?v=20260905d"></script>
+<script src="js/data/dialogues.js?v=20260905d"></script>
+<script src="js/data/balance.js?v=20260905d"></script>
+
+<!-- 绯荤粺 -->
+<script src="js/systems/particles.js?v=20260905d"></script>
+<script src="js/systems/buffs.js?v=20260905d"></script>
+<script src="js/systems/achievements.js?v=20260905d"></script>
+<script src="js/systems/quest.js?v=20260905d"></script>
+<script src="js/systems/talent.js?v=20260905d"></script>
+<script src="js/systems/save.js?v=20260905d"></script>
+<script src="js/systems/audio.js?v=20260905d"></script>
+<script src="js/systems/pet.js?v=20260905d"></script>
+<script src="js/systems/crafting.js?v=20260905d"></script>
+<script src="js/systems/shop.js?v=20260905d"></script>
+<script src="js/systems/enchant.js?v=20260905d"></script>
+<script src="js/systems/arena.js?v=20260905d"></script>
+<script src="js/systems/title.js?v=20260905d"></script>
+<script src="js/systems/boss.js?v=20260905d"></script>
+<script src="js/systems/story.js?v=20260905d"></script>
+<script src="js/systems/mobile.js?v=20260905d"></script>
+
+<!-- 鐗╁搧 -->
+<script src="js/items/inventory.js?v=20260905d"></script>
+
+<!-- 鎴樻枟 -->
+<script src="js/combat/combat.js?v=20260905d"></script>
+
+<!-- 瀹炰綋 -->
+<script src="js/entities/player.js?v=20260905d"></script>
+<script src="js/entities/monster.js?v=20260905d"></script>
+
+<!-- 涓栫晫 -->
+<script src="js/world/dungeon.js?v=20260905d"></script>
+
+<!-- UI -->
+<script src="js/ui/hud.js?v=20260905d"></script>
+
+<!-- 娓告垙涓诲惊鐜?-->
+<script src="js/core/game.js?v=20260905d"></script>
+
+<script>
+  window.addEventListener('load', () => {
+    document.getElementById('loading').style.display = 'none';
+  });
+</script>
+</body>
+</html>
