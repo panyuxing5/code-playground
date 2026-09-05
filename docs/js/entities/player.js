@@ -101,11 +101,19 @@ class Player {
 
     this.name = classData.name;
     this.baseStats = { ...classData.baseStats };
-    this.maxHp = classData.baseHp;
+    this.maxHp = classData.baseStats.hp || 100;
     this.hp = this.maxHp;
-    this.maxMp = classData.baseMp;
+    this.maxMp = classData.baseStats.mp || 50;
     this.mp = this.maxMp;
-    this.moveSpeed = classData.moveSpeed;
+    this.maxStamina = classData.baseStats.stamina || 100;
+    this.stamina = this.maxStamina;
+    this.moveSpeed = (classData.derivedStats && classData.derivedStats.moveSpeed) || 3.0;
+    this.damage = (classData.derivedStats && classData.derivedStats.damage) || 10;
+    this.attackSpeed = (classData.derivedStats && classData.derivedStats.attackSpeed) || 1.0;
+    this.armor = (classData.derivedStats && classData.derivedStats.armor) || 0;
+    this.magicResist = (classData.derivedStats && classData.derivedStats.magicResist) || 0;
+    this.crit = (classData.derivedStats && classData.derivedStats.critChance) || 0.05;
+    this.dodge = (classData.derivedStats && classData.derivedStats.dodge) || 0;
 
     // 初始技能
     this.skills = classData.skills.map(s => ({ ...s, level: 1 }));

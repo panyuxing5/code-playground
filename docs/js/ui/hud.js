@@ -16,7 +16,7 @@ const HUD = {
     this.renderQuestTracker(ctx, game);
     this.renderBuffBar(ctx, player);
     this.renderFloorInfo(ctx, game);
-    this.renderGold(ctx, player);
+    this.renderGold(ctx, player, game);
   },
 
   // 血条
@@ -324,9 +324,9 @@ const HUD = {
   },
 
   // 金币
-  renderGold(ctx, player) {
-    const x = Game.canvas.width - 180;
-    const y = Game.canvas.height - 40;
+  renderGold(ctx, player, game) {
+    const x = game.canvas.width - 180;
+    const y = game.canvas.height - 40;
 
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
     ctx.fillRect(x, y, 160, 30);
