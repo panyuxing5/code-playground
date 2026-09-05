@@ -254,10 +254,10 @@ class Player {
     const input = InputManager;
     let dx = 0, dy = 0;
 
-    if (input.isActionDown('move_up')) dy -= 1;
-    if (input.isActionDown('move_down')) dy += 1;
-    if (input.isActionDown('move_left')) dx -= 1;
-    if (input.isActionDown('move_right')) dx += 1;
+    if (input.isActionDown('up')) dy -= 1;
+    if (input.isActionDown('down')) dy += 1;
+    if (input.isActionDown('left')) dx -= 1;
+    if (input.isActionDown('right')) dx += 1;
 
     // 混乱状态
     if (BuffSystem.hasBuff(this, 'confuse')) {
@@ -286,7 +286,7 @@ class Player {
     this.velocityY = dy * this.moveSpeed;
 
     // 冲刺
-    if (input.isActionPressed('dash') && this.stamina >= 20) {
+    if (input.isActionPressed('sprint') && this.stamina >= 20) {
       this.stamina -= 20;
       this.velocityX *= 3;
       this.velocityY *= 3;
@@ -300,8 +300,9 @@ class Player {
     }
 
     // 技能
+    const skillActions = ['skill1', 'skill2', 'skill3', 'skill4', 'ultimate'];
     for (let i = 0; i < 5; i++) {
-      if (input.isActionPressed(`skill_${i + 1}`)) {
+      if (input.isActionPressed(skillActions[i])) {
         const skillId = this.skillBar[i];
         if (skillId) {
           this.useSkill(skillId, game);
