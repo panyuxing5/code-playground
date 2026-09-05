@@ -39,7 +39,7 @@ class Player {
     this.block = 0;
     this.lifesteal = 0;
     this.attackSpeed = 1.0;
-    this.moveSpeed = 3.0;
+    this.moveSpeed = 1000; // 像素/秒，极快移动
     this.hpRegen = 1;
     this.mpRegen = 1;
 
@@ -331,8 +331,9 @@ class Player {
 
   // 更新移动
   updateMovement(dt, game) {
-    const newX = this.x + this.velocityX * dt * 60;
-    const newY = this.y + this.velocityY * dt * 60;
+    // 速度单位：像素/秒，直接乘以 dt
+    const newX = this.x + this.velocityX * dt;
+    const newY = this.y + this.velocityY * dt;
 
     // 碰撞检测
     if (!game.isColliding(newX, this.y, this.radius)) {

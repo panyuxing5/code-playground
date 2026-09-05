@@ -28,7 +28,7 @@ class Monster {
     this.hp = this.maxHp;
     this.damage = Math.floor(data.damage * scale);
     this.armor = Math.floor((data.armor || 0) * scale);
-    this.speed = data.speed || 1.5;
+    this.speed = data.speed || 500; // 像素/秒
     this.attackRange = data.attackRange || 40;
     this.sightRange = data.sightRange || 200;
     this.attackSpeed = data.attackSpeed || 1.0;
@@ -430,8 +430,8 @@ class Monster {
     const dy = this.targetY - this.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist > 5) {
-      this.velocityX = (dx / dist) * this.speed * 0.5;
-      this.velocityY = (dy / dist) * this.speed * 0.5;
+      this.velocityX = (dx / dist) * this.speed;
+      this.velocityY = (dy / dist) * this.speed;
     } else {
       this.velocityX = 0;
       this.velocityY = 0;
@@ -440,8 +440,9 @@ class Monster {
 
   // 更新移动
   updateMovement(dt, game) {
-    const newX = this.x + this.velocityX * dt * 60;
-    const newY = this.y + this.velocityY * dt * 60;
+    // 速度单位：像素/秒
+    const newX = this.x + this.velocityX * dt;
+    const newY = this.y + this.velocityY * dt;
 
     if (!game.isColliding(newX, this.y, this.radius)) {
       this.x = newX;

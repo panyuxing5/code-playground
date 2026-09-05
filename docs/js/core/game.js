@@ -598,6 +598,11 @@ class Game {
 
       // 渲染
       this.render();
+
+      // 清除单帧输入状态（必须在帧末调用）
+      if (window.InputManager) {
+        InputManager.endFrame();
+      }
     } catch (e) {
       console.error('[Game] 游戏循环出错:', e);
       // 出错时尝试显示错误信息

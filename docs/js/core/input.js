@@ -131,13 +131,28 @@ const Input = {
     });
     // 窗口失焦时清除按键状态
     window.addEventListener('blur', () => {
-      this.keys = {};
-      this.mouse.down = false;
-      this.mouse.rightDown = false;
-      this.mouse.middleDown = false;
+      this.resetAll();
+    });
+    // 页面隐藏时清除按键状态（切换标签页等）
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.resetAll();
+      }
     });
     // 触摸支持（移动端）
     this.setupTouch();
+  },
+  // 重置所有输入状态（防止按键卡住）
+  resetAll() {
+    this.keys = {};
+    this.keysPressed = {};
+    this.keysReleased = {};
+    this.mouse.down = false;
+    this.mouse.rightDown = false;
+    this.mouse.middleDown = false;
+    this.mouse.pressed = false;
+    this.mouse.rightPressed = false;
+    this.mouse.wheel = 0;
   },
   // 触摸支持
   setupTouch() {
