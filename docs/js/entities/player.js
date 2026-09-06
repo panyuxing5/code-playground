@@ -107,7 +107,7 @@ class Player {
     this.mp = this.maxMp;
     this.maxStamina = classData.baseStats.stamina || 100;
     this.stamina = this.maxStamina;
-    this.moveSpeed = (classData.derivedStats && classData.derivedStats.moveSpeed) || 3.0;
+    this.moveSpeed = (classData.baseStats && classData.baseStats.moveSpeed) || 400; // 像素/秒
     this.damage = (classData.derivedStats && classData.derivedStats.damage) || 10;
     this.attackSpeed = (classData.derivedStats && classData.derivedStats.attackSpeed) || 1.0;
     this.armor = (classData.derivedStats && classData.derivedStats.armor) || 0;
@@ -188,6 +188,28 @@ class Player {
       if (item.stats.hpRegen) this.hpRegen += item.stats.hpRegen;
       if (item.stats.mpRegen) this.mpRegen += item.stats.mpRegen;
       if (item.stats.magicDamage) this.damage += item.stats.magicDamage * 0.5;
+    }
+
+    // 符文加成（符文系统）
+    if (window.RuneSystem) {
+      const runeBonus = RuneSystem.getPlayerRuneBonus(this);
+      if (runeBonus.attackDamage) this.damage += runeBonus.attackDamage;
+      if (runeBonus.defense) this.armor += runeBonus.defense;
+      if (runeBonus.maxHp) this.maxHp += runeBonus.maxHp;
+      if (runeBonus.maxMp) this.maxMp += runeBonus.maxMp;
+      if (runeBonus.attackSpeed) this.attackSpeed += runeBonus.attackSpeed;
+      if (runeBonus.moveSpeed) this.moveSpeed += runeBonus.moveSpeed;
+      if (runeBonus.critChance) this.crit += runeBonus.critChance;
+      if (runeBonus.critDamage) this.critDamage += runeBonus.critDamage;
+      if (runeBonus.lifesteal) this.lifesteal += runeBonus.lifesteal;
+      if (runeBonus.hpRegen) this.hpRegen += runeBonus.hpRegen;
+      if (runeBonus.mpRegen) this.mpRegen += runeBonus.mpRegen;
+      if (runeBonus.allStats) {
+        str += runeBonus.allStats;
+        dex += runeBonus.allStats;
+        int += runeBonus.allStats;
+        vit += runeBonus.allStats;
+      }
     }
 
     // 天赋修饰
@@ -302,8 +324,8 @@ class Player {
       AudioSystem.playSound('dash');
     }
 
-    // 普通攻击
-    if (input.isActionPressed('attack') && this.attackCooldown <= 0) {
+    // 普通攻击 - 改成 isActionDown，按住空格连续攻击，更灵敏
+    if (input.isActionDown('attack') && this.attackCooldown <= 0) {
       this.performAttack(game);
     }
 
@@ -364,15 +386,15 @@ class Player {
   // 执行普通攻击
   performAttack(game) {
     this.isAttacking = true;
-    this.attackTimer = 0.3 / this.attackSpeed;
-    this.attackCooldown = 0.5 / this.attackSpeed;
+    this.attackTimer = 0.1 / this.attackSpeed;
+    this.attackCooldown = 0.15 / this.attackSpeed;
 
     AudioSystem.playSound('attack');
 
-    // 查找攻击范围内的敌人
-    const attackRange = 50;
-    const attackX = this.x + (this.facing === 'right' ? 30 : this.facing === 'left' ? -30 : 0);
-    const attackY = this.y + (this.facing === 'down' ? 30 : this.facing === 'up' ? -30 : 0);
+    // 查找攻击范围内的敌人（范围扩大到80）
+    const attackRange = 80;
+    const attackX = this.x + (this.facing === 'right' ? 40 : this.facing === 'left' ? -40 : 0);
+    const attackY = this.y + (this.facing === 'down' ? 40 : this.facing === 'up' ? -40 : 0);
 
     for (const monster of game.monsters) {
       if (monster.dead) continue;
@@ -391,8 +413,15 @@ class Player {
       }
     }
 
-    // 攻击特效
-    ParticleSystem.magic(attackX, attackY, '#fff', 5);
+    // 攻击特效（更明显）
+    ParticleSystem.magic(attackX, attackY, '#ffff00', 15);
+    for (let i = 0; i < 8; i++) {
+      const baseAngle = this.facing === 'right' ? 0 : this.facing === 'left' ? Math.PI : this.facing === 'down' ? Math.PI/2 : -Math.PI/2;
+      const angle = baseAngle + (i - 4) * 0.2;
+      const px = this.x + Math.cos(angle) * 50;
+      const py = this.y + Math.sin(angle) * 50;
+      ParticleSystem.magic(px, py, '#ffffff', 2);
+    }
   }
 
   // 使用技能

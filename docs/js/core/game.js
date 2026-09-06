@@ -68,6 +68,7 @@ class Game {
     this.showTitles = false;
     this.showGacha = false;
     this.showPetCollection = false;
+    this.showRune = false;
     this.dialogueData = null;
     this.shopData = null;
 
@@ -373,6 +374,10 @@ class Game {
           this.showEnchant = !this.showEnchant;
           this.state = this.showEnchant ? 'enchant' : 'playing';
           break;
+        case 'n':
+          this.showRune = !this.showRune;
+          this.state = this.showRune ? 'rune' : 'playing';
+          break;
         case 'j':
           this.showArena = !this.showArena;
           this.state = this.showArena ? 'arena' : 'playing';
@@ -405,7 +410,7 @@ class Game {
       if (e.key === 'Escape') {
         this.state = 'playing';
       }
-    } else if (this.state === 'inventory' || this.state === 'character' || this.state === 'quests' || this.state === 'map' || this.state === 'crafting' || this.state === 'shop' || this.state === 'enchant' || this.state === 'arena' || this.state === 'titles' || this.state === 'gacha' || this.state === 'petCollection') {
+    } else if (this.state === 'inventory' || this.state === 'character' || this.state === 'quests' || this.state === 'map' || this.state === 'crafting' || this.state === 'shop' || this.state === 'enchant' || this.state === 'rune' || this.state === 'arena' || this.state === 'titles' || this.state === 'gacha' || this.state === 'petCollection') {
       if (e.key === 'Escape' || e.key.toLowerCase() === 'i' || e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'q' || e.key.toLowerCase() === 'm' || e.key.toLowerCase() === 'f' || e.key.toLowerCase() === 'g' || e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'j' || e.key.toLowerCase() === 'k' || e.key.toLowerCase() === 'l' || e.key.toLowerCase() === 'p') {
         this.showInventory = false;
         this.showCharacter = false;
@@ -418,6 +423,7 @@ class Game {
         this.showTitles = false;
         this.showGacha = false;
         this.showPetCollection = false;
+        this.showRune = false;
         ShopManager.closeShop();
         this.state = 'playing';
       }
@@ -1105,6 +1111,11 @@ class Game {
       EnchantManager.renderUI(ctx, this);
     }
 
+    // 符文镶嵌
+    if (this.state === 'rune') {
+      this.renderRuneUI(ctx);
+    }
+
     // 竞技场
     if (this.state === 'arena') {
       ArenaManager.renderMenu(ctx, this);
@@ -1556,6 +1567,150 @@ class Game {
     ctx.font = '14px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('按 C 或 ESC 关闭', this.canvas.width / 2, this.canvas.height - 30);
+  }
+
+  // 符文镶嵌界面
+  renderRuneUI(ctx) {
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // 标题
+    ctx.fillStyle = '#a29bfe';
+    ctx.font = 'bold 32px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('🔮 符文镶嵌系统', this.canvas.width / 2, 50);
+
+    const p = this.player;
+    if (!p) return;
+
+    // 初始化选中状态
+    if (!this.runeSelectedSlot) this.runeSelectedSlot = null;
+    if (!this.runeSelectedIndex) this.runeSelectedIndex = -1;
+
+    // 左侧：装备列表
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText('装备（点击选择）', 80, 100);
+
+    const slots = ['weapon', 'armor', 'helmet', 'boots', 'ring', 'amulet'];
+    const slotNames = { weapon: '武器', armor: '护甲', helmet: '头盔', boots: '靴子', ring: '戒指', amulet: '项链' };
+
+    slots.forEach((slot, i) => {
+      const item = p.equipment[slot];
+      const y = 130 + i * 55;
+      const isSelected = this.runeSelectedSlot === slot;
+
+      // 背景
+      ctx.fillStyle = isSelected ? 'rgba(162,155,254,0.3)' : 'rgba(255,255,255,0.1)';
+      ctx.fillRect(60, y - 20, 350, 48);
+      ctx.strokeStyle = isSelected ? '#a29bfe' : '#555';
+      ctx.lineWidth = isSelected ? 2 : 1;
+      ctx.strokeRect(60, y - 20, 350, 48);
+
+      // 装备名称
+      ctx.fillStyle = item ? (item.color || '#fff') : '#7f8c8d';
+      ctx.font = '16px Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText(`${slotNames[slot]}: ${item ? item.name : '（空）'}`, 75, y);
+
+      // 已镶嵌的符文
+      if (item && item.runes && item.runes.length > 0) {
+        const runeText = item.runes.map(r => r.icon).join(' ');
+        ctx.fillStyle = '#fdcb6e';
+        ctx.font = '14px Arial';
+        ctx.fillText(runeText, 350, y);
+      }
+
+      // 符文槽数量
+      if (item) {
+        const maxSlots = item.rarity === 'legendary' ? 4 : item.rarity === 'epic' ? 3 : 2;
+        const current = item.runes ? item.runes.length : 0;
+        ctx.fillStyle = '#7f8c8d';
+        ctx.font = '12px Arial';
+        ctx.fillText(`[${current}/${maxSlots}]`, 400, y);
+      }
+    });
+
+    // 右侧：背包中的符文
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText('背包中的符文（点击选择）', 500, 100);
+
+    // 从背包中筛选符文
+    const runesInBag = [];
+    if (p.inventory && p.inventory.items) {
+      for (const item of p.inventory.items) {
+        if (item && item.type === 'rune') {
+          runesInBag.push(item);
+        }
+      }
+    }
+
+    if (runesInBag.length === 0) {
+      ctx.fillStyle = '#7f8c8d';
+      ctx.font = '16px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('背包中没有符文', 650, 200);
+      ctx.fillText('击杀怪物有几率掉落符文', 650, 230);
+    } else {
+      runesInBag.forEach((rune, i) => {
+        const y = 130 + i * 50;
+        const isSelected = this.runeSelectedIndex === i;
+
+        ctx.fillStyle = isSelected ? 'rgba(253,203,110,0.3)' : 'rgba(255,255,255,0.1)';
+        ctx.fillRect(480, y - 18, 320, 42);
+        ctx.strokeStyle = isSelected ? '#fdcb6e' : '#555';
+        ctx.lineWidth = isSelected ? 2 : 1;
+        ctx.strokeRect(480, y - 18, 320, 42);
+
+        ctx.fillStyle = rune.color || '#fff';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${rune.icon} ${rune.name}`, 495, y + 5);
+
+        ctx.fillStyle = '#7f8c8d';
+        ctx.font = '12px Arial';
+        ctx.fillText(rune.description ? rune.description.substring(0, 25) : '', 495, y + 22);
+      });
+    }
+
+    // 底部：操作按钮和提示
+    const btnY = this.canvas.height - 80;
+
+    // 镶嵌按钮
+    ctx.fillStyle = this.runeSelectedSlot && this.runeSelectedIndex >= 0 ? '#00b894' : '#636e72';
+    ctx.fillRect(200, btnY, 150, 40);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('镶嵌符文', 275, btnY + 26);
+
+    // 移除符文按钮
+    ctx.fillStyle = this.runeSelectedSlot ? '#e17055' : '#636e72';
+    ctx.fillRect(400, btnY, 150, 40);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('移除全部符文', 475, btnY + 26);
+
+    // 提示
+    ctx.fillStyle = '#7f8c8d';
+    ctx.font = '14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('先选择装备，再选择符文，然后点击"镶嵌符文"', this.canvas.width / 2, btnY + 60);
+    ctx.fillText('按 N 或 ESC 关闭', this.canvas.width / 2, this.canvas.height - 15);
+
+    // 符文总加成
+    if (window.RuneSystem) {
+      const bonus = RuneSystem.getPlayerRuneBonus(p);
+      const bonusText = RuneSystem.formatRuneEffect(bonus);
+      if (bonusText) {
+        ctx.fillStyle = '#fdcb6e';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`当前符文加成: ${bonusText}`, this.canvas.width / 2, 85);
+      }
+    }
   }
 
   // 渲染任务面板

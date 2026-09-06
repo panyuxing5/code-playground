@@ -28,7 +28,7 @@ class Monster {
     this.hp = this.maxHp;
     this.damage = Math.floor(data.damage * scale);
     this.armor = Math.floor((data.armor || 0) * scale);
-    this.speed = data.speed || 500; // 像素/秒
+    this.speed = (data.speed || 8) * 60; // 旧单位像素/帧 → 新单位像素/秒
     this.attackRange = data.attackRange || 40;
     this.sightRange = data.sightRange || 200;
     this.attackSpeed = data.attackSpeed || 1.0;
@@ -560,6 +560,28 @@ class Monster {
       if (Math.random() < loot.chance) {
         const count = loot.min + Math.floor(Math.random() * (loot.max - loot.min + 1));
         window.Game.dropItem(loot.itemId, this.x + (Math.random() - 0.5) * 30, this.y + (Math.random() - 0.5) * 30, count);
+      }
+    }
+
+    // 符文掉落（符文系统）
+    if (window.RuneSystem) {
+      const monsterType = this.isBoss ? (this.isWorldBoss ? 'worldBoss' : 'boss') : (this.isElite ? 'elite' : 'normal');
+      const rune = RuneSystem.tryDropRune({ type: monsterType }, window.Game.currentFloor || 1);
+      if (rune) {
+        // 直接添加到地面物品
+        const dropX = this.x + (Math.random() - 0.5) * 30;
+        const dropY = this.y + (Math.random() - 0.5) * 30;
+        if (!window.Game.groundItems) window.Game.groundItems = [];
+        window.Game.groundItems.push({
+          ...rune,
+          x: dropX,
+          y: dropY,
+          isRune: true
+        });
+        // 显示符文掉落提示
+        if (window.Game.showMessage) {
+          window.Game.showMessage(`✨ 掉落了 ${rune.name}！`, rune.color);
+        }
       }
     }
   }

@@ -35,6 +35,7 @@ const Input = {
     quest: ['KeyJ'],
     talents: ['KeyK'],
     craft: ['KeyC'],
+    rune: ['KeyN'],
     pause: ['Escape'],
     potion1: ['Digit1'],
     potion2: ['Digit2'],
@@ -58,36 +59,34 @@ const Input = {
     }
   },
   onKeyDown(e) {
-    if (!this.keys[e.code]) {
-      this.keysPressed[e.code] = true;
+    // 空格键兼容性处理：有些浏览器 key code 不一样
+    let keyCode = e.code;
+    if (e.key === ' ' || e.keyCode === 32) {
+      keyCode = 'Space';
     }
-    this.keys[e.code] = true;
-    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) {
+    if (!this.keys[keyCode]) {
+      this.keysPressed[keyCode] = true;
+    }
+    this.keys[keyCode] = true;
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(keyCode)) {
       e.preventDefault();
     }
   },
   onKeyUp(e) {
-    this.keys[e.code] = false;
-    this.keysReleased[e.code] = true;
+    // 空格键兼容性处理
+    let keyCode = e.code;
+    if (e.key === ' ' || e.keyCode === 32) {
+      keyCode = 'Space';
+    }
+    this.keys[keyCode] = false;
+    this.keysReleased[keyCode] = true;
   },
   // 绑定事件
   bindEvents() {
-    // 键盘按下
-    window.addEventListener('keydown', (e) => {
-      if (!this.keys[e.code]) {
-        this.keysPressed[e.code] = true;
-      }
-      this.keys[e.code] = true;
-      // 阻止默认行为（防止页面滚动等）
-      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) {
-        e.preventDefault();
-      }
-    });
-    // 键盘释放
-    window.addEventListener('keyup', (e) => {
-      this.keys[e.code] = false;
-      this.keysReleased[e.code] = true;
-    });
+    // 键盘按下 - 调用 onKeyDown 方法（含空格键兼容性处理）
+    window.addEventListener('keydown', (e) => this.onKeyDown(e));
+    // 键盘释放 - 调用 onKeyUp 方法
+    window.addEventListener('keyup', (e) => this.onKeyUp(e));
     // 鼠标移动
     this.canvas.addEventListener('mousemove', (e) => {
       const rect = this.canvas.getBoundingClientRect();
