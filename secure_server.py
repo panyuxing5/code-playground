@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 安全加固的 HTTP 服务器 v3
 最严格 CSP - 无通配符 / 无 scheme source / 无 unsafe-*
@@ -25,7 +25,7 @@ SECURITY_HEADERS = {
         "frame-src 'none'; "
         "worker-src 'none'; "
         "manifest-src 'self'; "
-        "prefetch-src 'self'; "
+        ""
         "fenced-frame-src 'none'"
     ),
     'X-Frame-Options': 'DENY',
@@ -149,3 +149,4 @@ if __name__ == '__main__':
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8081
     directory = sys.argv[2] if len(sys.argv) > 2 else "."
     run_server(port, directory)
+

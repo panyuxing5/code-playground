@@ -1,7 +1,60 @@
 // ==================== 永恒地牢 - 战斗系统 ====================
 // 管理伤害计算、攻击判定、技能释放、战斗状态
+// 数值设计参考：百分比减伤公式、暴击期望、几何分布
 
 const CombatSystem = {
+  // ==================== 数学公式工具 ====================
+
+  /**
+   * 百分比减伤公式（防御收益递减，绝大多数游戏通用）
+   * 伤害 = 攻击 × 100 / (100 + 防御)
+   * 防御0→100%伤害，防御50→66.7%，防御100→50%，防御200→33.3%
+   */
+  calculateDamageReduction(baseDamage, armor) {
+    return baseDamage * 100 / (100 + Math.max(0, armor));
+  },
+
+  /**
+   * 伤害期望（带暴击）
+   * E = 基础伤害 × (1 - 暴击率) + 基础伤害 × 暴击率 × 暴击倍率
+   *   = 基础伤害 × (1 + 暴击率 × (暴击倍率 - 1))
+   */
+  calculateExpectedDamage(baseDamage, critChance, critDamage) {
+    return baseDamage * (1 + critChance * (critDamage - 1));
+  },
+
+  /**
+   * 几何分布：平均多少次尝试才第一次成功
+   * E = 1 / p
+   * 例如稀有卡概率1/120，平均需要120次
+   */
+  calculateExpectedAttempts(successProbability) {
+    return successProbability > 0 ? 1 / successProbability : Infinity;
+  },
+
+  /**
+   * 集齐全套N种物品的期望购买次数（调和级数）
+   * E = n × (1 + 1/2 + 1/3 + ... + 1/n)
+   * 例如10张卡，平均需要约29.3包
+   */
+  calculateCollectionExpected(totalTypes) {
+    let harmonic = 0;
+    for (let i = 1; i <= totalTypes; i++) {
+      harmonic += 1 / i;
+    }
+    return totalTypes * harmonic;
+  },
+
+  /**
+   * 已有k张，下一包出新卡概率
+   * P_new = (n - k) / n
+   */
+  calculateNewCardProbability(totalTypes, ownedTypes) {
+    return Math.max(0, (totalTypes - ownedTypes) / totalTypes);
+  },
+
+  // ==================== 伤害计算 ====================
+
   // 计算普通攻击伤害
   calculateAttackDamage(attacker, defender) {
     const baseDamage = attacker.damage || 10;
@@ -18,17 +71,18 @@ const CombatSystem = {
       AchievementSystem.updateStat('criticalHits');
     }
 
-    // 护甲减伤（每点护甲减少0.5伤害，最少1点）
-    damage = Math.max(1, damage - armor * 0.5);
+    // 百分比减伤（防御收益递减，不会出现0伤害）
+    damage = this.calculateDamageReduction(damage, armor);
 
     // 伤害波动（±10%）
     damage *= 0.9 + Math.random() * 0.2;
 
     return {
-      damage: Math.floor(damage),
+      damage: Math.max(1, Math.floor(damage)),
       isCrit,
       isMiss: false,
-      isBlock: false
+      isBlock: false,
+      expectedDamage: this.calculateExpectedDamage(baseDamage, critChance, critDamage)
     };
   },
 
@@ -66,17 +120,18 @@ const CombatSystem = {
       damage *= (1 - resist / 100);
     }
 
-    // 护甲减伤（物理伤害）
+    // 护甲减伤（物理伤害）- 百分比减伤，防御收益递减
     if (!skill.effects.damageType || skill.effects.damageType === 'physical') {
       if (defender && defender.armor) {
-        damage = Math.max(1, damage - defender.armor * 0.5);
+        damage = this.calculateDamageReduction(damage, defender.armor);
       }
     }
 
     return {
-      damage: Math.floor(damage),
+      damage: Math.max(1, Math.floor(damage)),
       isCrit,
-      isMiss: false
+      isMiss: false,
+      expectedDamage: this.calculateExpectedDamage(baseDamage * multiplier, critChance, attacker.critDamage || 1.5)
     };
   },
 

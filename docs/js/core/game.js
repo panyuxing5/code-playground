@@ -76,6 +76,17 @@ class Game {
     this.mouseX = 0;
     this.mouseY = 0;
 
+    // 新系统
+    this.weatherSystem = null;
+    this.timeSystem = null;
+    this.mountSystem = null;
+    this.statsPanel = null;
+    this.checkInSystem = null;
+    this.enhanceSystem = null;
+    this.skillTreeSystem = null;
+    this.dailyQuestSystem = null;
+    this.extendedAchievementSystem = null;
+
     // 初始化
     this.init();
   }
@@ -106,6 +117,43 @@ class Game {
       } catch (e) {
         console.error(`[Game] ${name} 初始化失败:`, e);
       }
+    }
+
+    // 初始化天气和时间系统
+    try {
+      this.weatherSystem = new WeatherSystem(this);
+      this.timeSystem = new TimeSystem(this);
+      this.statsPanel = new StatsPanel(this);
+      console.log('[Game] 天气、时间和统计系统初始化完成');
+    } catch (e) {
+      console.error('[Game] 新系统初始化失败:', e);
+    }
+
+    // 初始化扩展系统（签到、强化、技能树、每日任务、扩展成就）
+    try {
+      if (typeof CheckInSystem !== 'undefined') {
+        this.checkInSystem = new CheckInSystem(this);
+        window.checkInSystem = this.checkInSystem;
+      }
+      if (typeof EnhanceSystem !== 'undefined') {
+        this.enhanceSystem = new EnhanceSystem(this);
+        window.enhanceSystem = this.enhanceSystem;
+      }
+      if (typeof SkillTreeSystem !== 'undefined') {
+        this.skillTreeSystem = new SkillTreeSystem(this);
+        window.skillTreeSystem = this.skillTreeSystem;
+      }
+      if (typeof DailyQuestSystem !== 'undefined') {
+        this.dailyQuestSystem = new DailyQuestSystem(this);
+        window.dailyQuestSystem = this.dailyQuestSystem;
+      }
+      if (typeof ExtendedAchievementSystem !== 'undefined') {
+        this.extendedAchievementSystem = new ExtendedAchievementSystem(this);
+        window.extendedAchievementSystem = this.extendedAchievementSystem;
+      }
+      console.log('[Game] 扩展系统初始化完成（签到、强化、技能树、每日任务、扩展成就）');
+    } catch (e) {
+      console.error('[Game] 扩展系统初始化失败:', e);
     }
 
     // 设置事件监听
@@ -395,9 +443,51 @@ class Game {
           this.state = this.showPetCollection ? 'petCollection' : 'playing';
           break;
         case 'v':
-          // 切换坐骑
+          // 切换坐骑（宠物系统）
           PetManager.toggleMount();
           this.showMessage(PetManager.isMounted ? '骑乘坐骑！' : '下坐骑');
+          break;
+        case 'z':
+          // 切换坐骑（新坐骑系统）
+          if (this.mountSystem) {
+            this.mountSystem.toggleMount();
+          }
+          break;
+        case 'tab':
+          // 切换统计面板
+          if (this.statsPanel) {
+            this.statsPanel.toggle();
+          }
+          break;
+        case 'o':
+          // 签到系统
+          if (this.checkInSystem) {
+            this.checkInSystem.toggleUI();
+          }
+          break;
+        case 'u':
+          // 装备强化系统
+          if (this.enhanceSystem) {
+            this.enhanceSystem.toggleUI();
+          }
+          break;
+        case 'y':
+          // 技能树系统
+          if (this.skillTreeSystem) {
+            this.skillTreeSystem.toggleUI();
+          }
+          break;
+        case 't':
+          // 每日任务系统
+          if (this.dailyQuestSystem) {
+            this.dailyQuestSystem.toggleUI();
+          }
+          break;
+        case 'r':
+          // 扩展成就系统
+          if (this.extendedAchievementSystem) {
+            this.extendedAchievementSystem.toggleUI();
+          }
           break;
         case 'escape':
           this.state = 'paused';
@@ -448,6 +538,16 @@ class Game {
       // 初始化玩家
       this.player = new Player(0, 0, classType);
       TalentSystem.init(classType);
+
+      // 初始化坐骑系统
+      try {
+        this.mountSystem = new MountSystem(this.player);
+        this.mountSystem.addMount('warhorse');
+        this.player.game = this;
+        console.log('[Game] 坐骑系统初始化完成');
+      } catch (e) {
+        console.error('[Game] 坐骑系统初始化失败:', e);
+      }
 
       // 重置数据
       this.monsters = [];
@@ -673,6 +773,36 @@ class Game {
     // 检查称号解锁
     if (Math.floor(this.gameTime) % 5 === 0) {
       TitleManager.checkTitles(this);
+    }
+
+    // 更新新系统
+    if (this.weatherSystem) {
+      this.weatherSystem.update(dt, this.camera.x, this.camera.y);
+    }
+    if (this.timeSystem) {
+      this.timeSystem.update(dt);
+    }
+    if (this.mountSystem) {
+      this.mountSystem.update(dt);
+    }
+    if (this.statsPanel) {
+      this.statsPanel.update(dt);
+    }
+    // 更新扩展系统
+    if (this.checkInSystem) {
+      this.checkInSystem.update(dt);
+    }
+    if (this.enhanceSystem) {
+      this.enhanceSystem.update(dt);
+    }
+    if (this.skillTreeSystem) {
+      this.skillTreeSystem.update(dt);
+    }
+    if (this.dailyQuestSystem) {
+      this.dailyQuestSystem.update(dt);
+    }
+    if (this.extendedAchievementSystem) {
+      this.extendedAchievementSystem.update(dt);
     }
 
     // 检查宝箱
@@ -1054,11 +1184,31 @@ class Game {
     // 渲染宠物
     PetManager.render(ctx, this.camera);
 
+    // 渲染坐骑
+    if (this.mountSystem && this.player) {
+      this.mountSystem.render(ctx, this.player.x, this.player.y, this.camera.x, this.camera.y, this.canvas.width, this.canvas.height);
+    }
+
     // 渲染投射物
     this.renderProjectiles(ctx);
 
     // 渲染粒子
     ParticleSystem.render(ctx, this.camera);
+
+    // 渲染天气效果
+    if (this.weatherSystem) {
+      this.weatherSystem.render(ctx, this.camera.x, this.camera.y, this.canvas.width, this.canvas.height);
+    }
+
+    // 渲染时间效果（昼夜）
+    if (this.timeSystem) {
+      this.timeSystem.render(ctx, this.canvas.width, this.canvas.height);
+    }
+
+    // 渲染统计面板
+    if (this.statsPanel) {
+      this.statsPanel.render(ctx, this.canvas.width, this.canvas.height);
+    }
 
     // 渲染陷阱（已触发的显示）
     this.renderTraps(ctx);

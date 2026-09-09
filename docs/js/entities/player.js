@@ -1,4 +1,4 @@
-// ==================== 永恒地牢 - 玩家实体 ====================
+﻿// ==================== 永恒地牢 - 玩家实体 ====================
 // 玩家角色的属性、移动、攻击、技能、升级
 
 class Player {
@@ -30,7 +30,7 @@ class Player {
     this.shield = 0;
 
     // 战斗属性（计算后）
-    this.damage = 10;
+    this.damage = 12;
     this.armor = 0;
     this.magicResist = 0;
     this.crit = 0.05;
@@ -39,7 +39,7 @@ class Player {
     this.block = 0;
     this.lifesteal = 0;
     this.attackSpeed = 1.0;
-    this.moveSpeed = 1000; // 像素/秒，极快移动
+    this.moveSpeed = 128; // 像素/秒，每秒4格（一格32像素），格子移动模式
     this.hpRegen = 1;
     this.mpRegen = 1;
 
@@ -76,6 +76,9 @@ class Player {
     this.isAttacking = false;
     this.attackTimer = 0;
     this.attackCooldown = 0;
+    this.moveCooldown = 0; // 格子移动冷却
+    this.gridMoveMode = true; // 格子移动模式：按一下键移动一格
+    this.TILE_SIZE = 32; // 一格大小
 
     // 动画
     this.animFrame = 0;
@@ -136,6 +139,10 @@ class Player {
 
   // 计算所有属性
   calculateStats() {
+    // 记录旧的最大值，用于按比例同步当前值
+    const oldMaxHp = this.maxHp || 100;
+    const oldMaxMp = this.maxMp || 50;
+
     // 基础属性
     let str = this.baseStats.str;
     let dex = this.baseStats.dex;
@@ -221,7 +228,16 @@ class Player {
       }
     }
 
-    // 确保当前值不超过最大值
+    // 确保当前值不超过最大值，并按比例同步（maxHp增加时hp也按比例增加）
+    if (oldMaxHp > 0 && this.maxHp > oldMaxHp) {
+      this.hp = this.hp * (this.maxHp / oldMaxHp);
+    }
+    if (oldMaxMp > 0 && this.maxMp > oldMaxMp) {
+      this.mp = this.mp * (this.maxMp / oldMaxMp);
+    }
+    // 初始化时确保满血满蓝
+    if (this.hp <= 0 || this.hp === undefined) this.hp = this.maxHp;
+    if (this.mp <= 0 || this.mp === undefined) this.mp = this.maxMp;
     this.hp = Math.min(this.hp, this.maxHp);
     this.mp = Math.min(this.mp, this.maxMp);
   }
@@ -284,36 +300,97 @@ class Player {
     const input = InputManager;
     let dx = 0, dy = 0;
 
-    if (input.isActionDown('up')) dy -= 1;
-    if (input.isActionDown('down')) dy += 1;
-    if (input.isActionDown('left')) dx -= 1;
-    if (input.isActionDown('right')) dx += 1;
-
-    // 混乱状态
-    if (BuffSystem.hasBuff(this, 'confuse')) {
-      dx = -dx;
-      dy = -dy;
-    }
-
-    // 归一化
-    if (dx !== 0 || dy !== 0) {
-      const len = Math.sqrt(dx * dx + dy * dy);
-      dx /= len;
-      dy /= len;
-      this.isMoving = true;
-
-      // 确定朝向
-      if (Math.abs(dx) > Math.abs(dy)) {
-        this.facing = dx > 0 ? 'right' : 'left';
-      } else {
-        this.facing = dy > 0 ? 'down' : 'up';
+    // 格子移动模式：按一下键移动一格
+    if (this.gridMoveMode) {
+      // 移动冷却递减
+      if (this.moveCooldown > 0) {
+        this.moveCooldown -= dt;
       }
-    } else {
-      this.isMoving = false;
-    }
 
-    this.velocityX = dx * this.moveSpeed;
-    this.velocityY = dy * this.moveSpeed;
+      // 只在按下的那一刻触发移动（isActionPressed），冷却时间到了才能再次移动
+      if (this.moveCooldown <= 0) {
+        if (input.isActionPressed('up')) dy -= 1;
+        else if (input.isActionPressed('down')) dy += 1;
+        else if (input.isActionPressed('left')) dx -= 1;
+        else if (input.isActionPressed('right')) dx += 1;
+
+        // 如果有移动输入，移动一格并设置冷却
+        if (dx !== 0 || dy !== 0) {
+          // 混乱状态
+          if (BuffSystem.hasBuff(this, 'confuse')) {
+            dx = -dx;
+            dy = -dy;
+          }
+
+          // 确定朝向
+          if (Math.abs(dx) > Math.abs(dy)) {
+            this.facing = dx > 0 ? 'right' : 'left';
+          } else {
+            this.facing = dy > 0 ? 'down' : 'up';
+          }
+
+          // 移动一格（32像素）
+          const moveX = dx * this.TILE_SIZE;
+          const moveY = dy * this.TILE_SIZE;
+          const newX = this.x + moveX;
+          const newY = this.y + moveY;
+
+          // 碰撞检测
+          if (!game.isColliding(newX, this.y, this.radius)) {
+            this.x = newX;
+          }
+          if (!game.isColliding(this.x, newY, this.radius)) {
+            this.y = newY;
+          }
+
+          // 设置移动冷却（0.15秒，每秒约6-7格）
+          this.moveCooldown = 0.15;
+          this.isMoving = true;
+
+          // 脚步粒子和声音
+          this.footstepTimer = 0;
+          ParticleSystem.footstep(this.x, this.y);
+        } else {
+          this.isMoving = false;
+        }
+      }
+
+      // 速度设为0，因为格子移动是直接设置位置
+      this.velocityX = 0;
+      this.velocityY = 0;
+    } else {
+      // 实时移动模式（原逻辑）
+      if (input.isActionDown('up')) dy -= 1;
+      if (input.isActionDown('down')) dy += 1;
+      if (input.isActionDown('left')) dx -= 1;
+      if (input.isActionDown('right')) dx += 1;
+
+      // 混乱状态
+      if (BuffSystem.hasBuff(this, 'confuse')) {
+        dx = -dx;
+        dy = -dy;
+      }
+
+      // 归一化
+      if (dx !== 0 || dy !== 0) {
+        const len = Math.sqrt(dx * dx + dy * dy);
+        dx /= len;
+        dy /= len;
+        this.isMoving = true;
+
+        // 确定朝向
+        if (Math.abs(dx) > Math.abs(dy)) {
+          this.facing = dx > 0 ? 'right' : 'left';
+        } else {
+          this.facing = dy > 0 ? 'down' : 'up';
+        }
+      } else {
+        this.isMoving = false;
+      }
+
+      this.velocityX = dx * this.moveSpeed;
+      this.velocityY = dy * this.moveSpeed;
+    }
 
     // 冲刺
     if (input.isActionPressed('sprint') && this.stamina >= 20) {
@@ -386,13 +463,13 @@ class Player {
   // 执行普通攻击
   performAttack(game) {
     this.isAttacking = true;
-    this.attackTimer = 0.1 / this.attackSpeed;
-    this.attackCooldown = 0.15 / this.attackSpeed;
+    this.attackTimer = 0.08 / this.attackSpeed;
+    this.attackCooldown = 0.1 / this.attackSpeed;
 
     AudioSystem.playSound('attack');
 
     // 查找攻击范围内的敌人（范围扩大到80）
-    const attackRange = 80;
+    const attackRange = 100;
     const attackX = this.x + (this.facing === 'right' ? 40 : this.facing === 'left' ? -40 : 0);
     const attackY = this.y + (this.facing === 'down' ? 40 : this.facing === 'up' ? -40 : 0);
 
@@ -521,6 +598,11 @@ class Player {
     this.skillPoints += 1;
     TalentSystem.addTalentPoints(1);
 
+    // 技能树系统：升级获得技能点
+    if (window.Game && window.Game.skillTreeSystem) {
+      window.Game.skillTreeSystem.addSkillPoints(1);
+    }
+
     // 恢复全部
     this.hp = this.maxHp;
     this.mp = this.maxMp;
@@ -633,3 +715,5 @@ class Player {
 }
 
 window.Player = Player;
+
+

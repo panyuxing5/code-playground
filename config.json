@@ -1,0 +1,19 @@
+{
+  "smtp": {
+    "enabled": true,
+    "server": "smtp.office365.com",
+    "port": 587,
+    "use_tls": true,
+    "username": "YOUR_EMAIL@outlook.com",
+    "password": "YOUR_PASSWORD",
+    "from_name": "Eternal Dungeon",
+    "from_email": "YOUR_EMAIL@outlook.com"
+  },
+  "security": {
+    "password_hash_iterations": 100000,
+    "verification_code_expiry": 600,
+    "session_expiry": 604800,
+    "max_login_attempts": 5,
+    "lockout_duration": 300
+  }
+}

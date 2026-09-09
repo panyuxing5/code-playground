@@ -24,16 +24,22 @@ class Monster {
 
     // 属性缩放（根据楼层）
     const scale = 1 + 0.12 * (floor - 1);
-    this.maxHp = Math.floor(data.hp * scale);
+    const baseStats = data.baseStats || data; // 兼容两种数据结构
+    this.maxHp = Math.floor((baseStats.hp || 20) * scale);
     this.hp = this.maxHp;
-    this.damage = Math.floor(data.damage * scale);
-    this.armor = Math.floor((data.armor || 0) * scale);
+    this.damage = Math.floor((baseStats.damage || 5) * scale);
+    this.armor = Math.floor((baseStats.armor || 0) * scale);
     this.speed = (data.speed || 8) * 60; // 旧单位像素/帧 → 新单位像素/秒
     this.attackRange = data.attackRange || 40;
     this.sightRange = data.sightRange || 200;
     this.attackSpeed = data.attackSpeed || 1.0;
-    this.expReward = Math.floor(data.exp * scale);
-    this.goldReward = Math.floor(data.gold * scale);
+    this.expReward = Math.floor((data.exp || 10) * scale);
+    // gold 可能是数组 [min, max] 或单个数值
+    if (Array.isArray(data.gold)) {
+      this.goldReward = Math.floor((data.gold[0] + Math.random() * (data.gold[1] - data.gold[0])) * scale);
+    } else {
+      this.goldReward = Math.floor((data.gold || 5) * scale);
+    }
 
     // 特殊属性
     this.crit = data.crit || 0.05;
