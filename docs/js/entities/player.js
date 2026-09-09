@@ -79,6 +79,7 @@ class Player {
     this.moveCooldown = 0; // 格子移动冷却
     this.gridMoveMode = true; // 格子移动模式：按一下键移动一格
     this.TILE_SIZE = 32; // 一格大小
+    this.moveStepSize = 16; // 每次移动步长（半格，更细腻）
 
     // 动画
     this.animFrame = 0;
@@ -329,9 +330,9 @@ class Player {
             this.facing = dy > 0 ? 'down' : 'up';
           }
 
-          // 移动一格（32像素）
-          const moveX = dx * this.TILE_SIZE;
-          const moveY = dy * this.TILE_SIZE;
+          // 移动一步（使用moveStepSize，半格16像素，更细腻）
+          const moveX = dx * this.moveStepSize;
+          const moveY = dy * this.moveStepSize;
           const newX = this.x + moveX;
           const newY = this.y + moveY;
 
@@ -343,13 +344,15 @@ class Player {
             this.y = newY;
           }
 
-          // 设置移动冷却（0.15秒，每秒约6-7格）
-          this.moveCooldown = 0.15;
+          // 设置移动冷却（0.1秒，每秒约10步，每步半格）
+          this.moveCooldown = 0.1;
           this.isMoving = true;
 
-          // 脚步粒子和声音
+          // 脚步粒子和声音（每两步播放一次，避免太频繁）
           this.footstepTimer = 0;
-          ParticleSystem.footstep(this.x, this.y);
+          if (Math.random() < 0.5) {
+            ParticleSystem.footstep(this.x, this.y);
+          }
         } else {
           this.isMoving = false;
         }
