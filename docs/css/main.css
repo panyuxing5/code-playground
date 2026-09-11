@@ -1,0 +1,96 @@
+/* 永恒地牢 - 主样式 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a0a1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#gameContainer {
+  position: relative;
+  box-shadow: 0 0 50px rgba(155, 89, 182, 0.3);
+}
+#gameCanvas {
+  display: block;
+  border: 2px solid #2c2c54;
+  cursor: crosshair;
+  max-width: 100vw;
+  max-height: 100vh;
+}
+#loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #f1c40f;
+  font-size: 24px;
+}
+/* 移动端虚拟摇杆 */
+#mobileControls {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+#joystick {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  pointer-events: auto;
+}
+#joystickKnob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background: rgba(241, 196, 15, 0.7);
+  border-radius: 50%;
+  border: 2px solid #f1c40f;
+}
+#actionButtons {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+.action-btn {
+  width: 60px;
+  height: 60px;
+  background: rgba(155, 89, 182, 0.6);
+  border: 2px solid #9b59b6;
+  border-radius: 50%;
+  color: white;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.action-btn:active {
+  background: rgba(155, 89, 182, 0.9);
+}
+/* 移动端显示控制 */
+@media (max-width: 768px) {
+  #mobileControls { display: block; }
+  #gameCanvas { border: none; }
+}
